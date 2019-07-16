@@ -1,0 +1,18 @@
+{
+  "name": "impactwizz",
+  "version": "1.0.0",
+  "description": "Wizzard for open scientometric indicators",
+  "main": "index.html",
+  "dependencies": {
+    "alpaca": "^1.5.27",
+    "bootstrap": "^3.4.1",
+    "handlebar": "^1.0.0",
+    "jquery": "^3.4.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "lilients",
+  "license": "MIT"
+}

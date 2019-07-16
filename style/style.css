@@ -1,0 +1,78 @@
+/* body elements */
+
+.container {
+  margin: auto;
+  position: relative;
+}
+
+.section{
+  padding: 30px 10px 30px 10px;
+}
+
+/* header */
+
+.header {
+  padding-left: 10px;
+  padding-top: 25px;
+  padding-bottom: 10px;
+  background-color: #4b4b4b;
+  text-decoration: none;
+  margin-bottom: 20px;
+}
+
+#logo {
+    float: right;
+    padding-top: 10px;
+}
+
+/* footer */
+
+.footer{
+  position: absolute;
+  padding-top: 20px;
+
+}
+
+/* links */
+
+.header a, .header a:hover {
+  color: white !important;
+}
+
+.container a, .footer a{
+  color: #af1414;
+}
+
+/* form */
+
+.alpaca-control {
+  padding-top: 7px;
+}
+
+input::placeholder{
+  font-size: 80%;
+}
+
+textarea::placeholder{
+  font-size: 80%;
+  font-family: sans-serif;
+  background-color: #f8f8f8;
+}
+
+label{
+  font-size: 110%;
+}
+
+/* paperbuzzviz */
+
+.paperbuzz-title {
+    text-decoration: none !important;
+}
+
+.paperbuzz-bar.main{
+	fill: black !important;
+}
+
+.paperbuzz-bar.alt{
+	fill: none !important;
+}

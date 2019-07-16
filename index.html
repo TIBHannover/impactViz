@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>ImpactGeany</title>
+				<!-- jquery -->
+				<script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+				<!-- bootstrap -->
+        <script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+				<link type="text/css" rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+				<!-- alpaca -->
+        <script type="text/javascript" src="node_modules/handlebars/dist/handlebars.js"></script>
+				<script type="text/javascript" src="node_modules/alpaca/dist/alpaca/bootstrap/alpaca.min.js"></script>
+				<link type="text/css" rel="stylesheet" href="node_modules/alpaca/dist/alpaca/bootstrap/alpaca.min.css" />
+				<!-- paperbuzzviz and d3js-->
+				<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script> <!-- TODO get via npm or git submodule -->
+				<script type="text/javascript" src="lib/paperbuzzviz/example/d3-tip.js"></script>
+				<script type="text/javascript" src="lib/paperbuzzviz/paperbuzzviz.js"></script>
+				<link rel="stylesheet" type="text/css" href="lib/paperbuzzviz/assets/css/paperbuzzviz.css" />
+				<!-- own scripts -->
+				<script type="text/javascript" src="js/impact.js"></script>
+				<link type="text/css" rel="stylesheet" href="style/style.css">
+	  </head>
+	<body>
+
+		<!-- header -->
+	  <div class="header">
+	    <div class="container">
+	      <a href="index.html">
+					<img id="logo" src="img/logo.png" width="60px">
+					<h1>ImpactGeany</h1>
+	      </a>
+	    </div>
+	  </div>
+
+		<!-- main content of the page -->
+		<div class="container">
+			<!-- input form -->
+			<div class="section">
+				<div id="form"></div>
+				<a href="index.html?identifier=10.1371/journal.pone.0165367"> example 1</a> |
+				<a href="index.html?identifier=10.3897/rio.4.e31656">example 2</a> |
+				<a href="index.html?identifier=10.1038/520429a"> example 3</a>
+			</div>
+			<!-- display result with paperbuzzviz.js -->
+			<div class="section">
+				<div id="paperbuzz"></div>
+			</div>
+		</div>
+
+		<!-- footer -->
+		<div class="container">
+			<div class="footer">
+			 <a href="mailto:rosi.project(at)tib.eu">Contact</a>&nbsp;|&nbsp;
+			 <a href="https://www.tib.eu/en/service/data-protection/">Data protection</a>&nbsp;|&nbsp;
+			 <a href="https://labs.tib.eu/info/en/imprint/">Imprint</a>&nbsp;|&nbsp;
+			 <a href="https://github.com/lilients/impactGeany">Code (GitHub)</a>
+			</div>
+		</div>
+
+	</body>
+</html>
