@@ -12,6 +12,8 @@
         <script type="text/javascript" src="node_modules/handlebars/dist/handlebars.js"></script>
 				<script type="text/javascript" src="node_modules/alpaca/dist/alpaca/bootstrap/alpaca.min.js"></script>
 				<link type="text/css" rel="stylesheet" href="node_modules/alpaca/dist/alpaca/bootstrap/alpaca.min.css" />
+				<!-- -->
+				<script src="node_modules/chart.js/dist/Chart.js"></script>
 				<!-- paperbuzzviz and d3js-->
 				<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script> <!-- TODO get via npm or git submodule -->
 				<script type="text/javascript" src="lib/paperbuzzviz/example/d3-tip.js"></script>
@@ -20,6 +22,7 @@
 				<!-- own scripts -->
 				<script type="text/javascript" src="js/impact.js"></script>
 				<link type="text/css" rel="stylesheet" href="style/style.css">
+				<link rel="shortcut icon" type="image/png" href="img/favicon.ico"/>
 	  </head>
 	<body>
 
@@ -38,23 +41,85 @@
 			<!-- input form -->
 			<div class="section">
 				<div id="form"></div>
-				<a href="index.html?identifier=10.1371/journal.pone.0165367"> example 1</a> |
-				<a href="index.html?identifier=10.3897/rio.4.e31656">example 2</a> |
-				<a href="index.html?identifier=10.1038/520429a"> example 3</a>
+				<ul class="section list-inline">
+					<li><a href="index.html?identifier=10.1371/journal.pone.0165367"> example 1</a></li> <!-- The Effect of Gender in the Publication Patterns in Mathematics -->
+					<li><a href="index.html?identifier=10.3897/rio.4.e31656">example 2</a></li> <!-- Reference implementation for open scientometric indicators (ROSI) -->
+					<li><a href="index.html?identifier=10.1038/520429a"> example 3</a></li> <!-- Bibliometrics: The Leiden Manifesto for research metrics -->
+					<li><a href="index.html?identifier=10.1073/pnas.1711842115"> example 4</a></li> <!-- The biomass distribution on Earth -->
+					<li><a href="index.html?identifier=10.1126/sciadv.1700782"> example 5</a></li> <!-- Production, use, and fate of all plastics ever made -->
+				</ul>
 			</div>
-			<!-- display result with paperbuzzviz.js -->
-			<div class="section">
-				<div id="paperbuzz"></div>
+
+			<!-- display results -->
+			<div class="section" id="result">
+
+				<h3 class="section"><a id="title"></a></h3>
+
+					<!-- navigation by concepts -->
+					<ul class="nav nav-tabs" >
+						<li><a href="#" onclick="display('overview')">Overview</a></li>
+						<li><a href="#" onclick="display('scientific-impact')">Scientific impact</a></li>
+						<li><a href="#" onclick="display('societal-impact')">Societal impact</a></li>
+						<li><a href="#" onclick="display('community')">Community</a></li>
+						<li><a href="#" onclick="display('openness')">Openness</a></li>
+					</ul>
+
+					<!-- overview -->
+					<div class="section concept" id="overview">
+						<canvas id="chartjs" width="30%"></canvas>
+					</div>
+
+					<!-- scientific-impact -->
+					<div class="section concept" id="scientific-impact">
+							<div class="alert alert-info">
+								<strong>Definition Scientific impact:</strong> The impact that a work has within the scientific community; is mostly based on citation-based indicators (e.g. publication impact as measured through citations or the number of publications (adopted from Neylon 2017).
+							</div>
+							<div class="alert alert-warning">
+								A fancy visualization will follow soon.
+							</div>
+					</div>
+
+					<!-- societal-impact -->
+					<div class="section concept" id="societal-impact">
+						<div class="alert alert-info">
+							<strong>Definition Societal impact:</strong> The impact that a work has within society. Recognition from societal groups or for societal activities; measurable impact (e.g via patents, citations in policy documents, mentions in social media, press).
+						</div>
+						<div id="paperbuzz"></div>
+					</div>
+
+					<!-- community -->
+					<div class="section concept" id="community">
+						<div class="alert alert-info">
+							<strong>Definition Community:</strong> Involvement in the scientific community (e.g. participation in conferences, peer review and editorial activities, and learned societies)
+						</div>
+						<div class="alert alert-warning">
+							A fancy visualization will follow soon.
+						</div>
+					</div>
+
+					<!-- openness -->
+					<div class="section concept" id="openness">
+						<div class="alert alert-info">
+							<strong>Definition Openness:</strong> Compliance of a person or work to Open Science Standards (e.g. FAIR research data (Findable, Accessible, Interoperable und Reusable), social openness (readability etc.).
+						</div>
+						<div class="alert alert-warning">
+							A fancy visualization will follow soon.
+						</div>
+						<div id="oa-status">
+					</div>
+
 			</div>
 		</div>
 
 		<!-- footer -->
 		<div class="container">
 			<div class="footer">
-			 <a href="mailto:rosi.project(at)tib.eu">Contact</a>&nbsp;|&nbsp;
-			 <a href="https://www.tib.eu/en/service/data-protection/">Data protection</a>&nbsp;|&nbsp;
-			 <a href="https://labs.tib.eu/info/en/imprint/">Imprint</a>&nbsp;|&nbsp;
-			 <a href="https://github.com/lilients/impactGeany">Code (GitHub)</a>
+				<ul class="list-inline">
+					 <li><a href="mailto:rosi.project(at)tib.eu">Contact</a></li>
+					 <li><li><a href="https://www.tib.eu/en/service/data-protection/">Data protection</a></li>
+					 <li><a href="https://labs.tib.eu/info/en/imprint/">Imprint</a></li>
+					 <li><a href="https://github.com/lilients/impactGeany">Code (GitHub)</a></li>
+				 </ul>
 			</div>
 		</div>
 

@@ -18,7 +18,8 @@ A wizzard for open scientometric indicators
 * [jQuery](https://jquery.com/) - basic javascript library
 * [alpacajs](http://alpacajs.org) - js form generator library
 * [paperbuzzviz](https://github.com/jalperin/paperbuzzviz) - js library to vizualize PaperBuzz metrics
+* [chartjs](https://www.chartjs.org/) - js library to vizualize charts
 
 ## License
 
-This project is licensed under the MIT License
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT)

@@ -4,18 +4,52 @@ $(document).ready(function() {
   let params = new URLSearchParams(location.search);
   let identifier = params.get('identifier');
 
-  // display visualisation with paperbuzzviz
-  if(identifier != null){
-    displayPaperbuzzviz(identifier);
-  }
-
   // display form with alpaca.js
   var action = "impact.php";
   displayForm(identifier, action);
 
+  // get data from paperbuzz and display results with paperbuzzviz and chartjs
+  if(identifier != null){
+
+    // get data from paperbuzz
+    d3.json('https://api.paperbuzz.org/v0/doi/' + identifier, function(data) {
+
+      // display title
+      $('#title').attr('href', 'http://dx.doi.org/' + data.doi).text(data.metadata.title);
+
+      $('#result').css('display', 'block');
+      display('overview');
+
+      // display oa status
+      var message = "this is closed :(";
+      if(data.open_access.is_oa){
+        message = "this is open access, yay!";
+      }
+      $("#oa-status").append("p").text(message);
+
+      // display overview with chartjs
+      displayOverview(data);
+
+      // display detailed view with paperbuzzviz
+      displayPaperbuzzviz(data);
+
+    });
+
+  }
+
 });
 
-  // query form with alpaca (identifier as data)
+
+// display the selected concept and hide all other
+function display(concept){
+
+  $('.concept').css('display', 'none');
+  $('#'+concept).css('display', 'block');
+
+}
+
+
+// query form with alpaca (identifier as data)
 function displayForm(identifier, action){
 
   if(identifier != null){
@@ -52,9 +86,43 @@ function displayForm(identifier, action){
 
 }
 
+// convert data according to json structure needed for the chart js
+function convertForChart(sources){
+
+  // create json structure for chartjs data
+  var displayData = {}; datasets = []; labels = []; events = [];
+
+  // get data from each source
+  sources.forEach(function(source) {
+    events.push(source.events_count);
+    labels.push(source.source.display_name);
+  });
+
+  datasets.push({data: events});
+  displayData.datasets = datasets;
+  displayData.labels = labels;
+
+  return displayData;
+}
+
+
+// display overview with chartjs
+function displayOverview(data){
+
+  // read and convert data to chart js json syntax
+  var sources = data.altmetrics_sources;
+  var displayData = convertForChart(sources);
+
+  // this creates the chartjs chart
+  var myChart = new Chart($('#chartjs'), {
+    data: displayData,
+    type: 'polarArea'
+
+  });
+}
 
 // adding visualisation with PaperbuzzViz
-function displayPaperbuzzviz(identifier){
+function displayPaperbuzzviz(data){
   var options = {
         minItemsToShowGraph: {
             minEventsForYearly: 10,
@@ -66,15 +134,12 @@ function displayPaperbuzzviz(identifier){
             },
         graphheight: 200,
         graphwidth:  500,
-        showTitle: true,
+        showTitle: false,
         showMini: false,
       }
 
   var paperbuzzviz = undefined;
-
-  d3.json('https://api.paperbuzz.org/v0/doi/' + identifier, function(data) {
-      options.paperbuzzStatsJson = data
-      paperbuzzviz = new PaperbuzzViz(options);
-      paperbuzzviz.initViz();
-    });
+  options.paperbuzzStatsJson = data;
+  paperbuzzviz = new PaperbuzzViz(options);
+  paperbuzzviz.initViz();
 }
