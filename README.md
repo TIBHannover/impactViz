@@ -4,14 +4,14 @@ A wizzard for open scientometric indicators
 
 ## Features
 
-* enter doi of an article
+* input for doi of an article
 * display metrics based on data from PaperBuzz
+* display overview of all data sources and detailed view for concepts
 
-## Installation and usage
+## Installation
 
 1. clone this repo (with submodule)
 2. run npm install
-
 
 ## Built with
 

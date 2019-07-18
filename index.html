@@ -22,6 +22,7 @@
 				<!-- own scripts -->
 				<script type="text/javascript" src="js/impact.js"></script>
 				<link type="text/css" rel="stylesheet" href="style/style.css">
+				<!-- favicon -->
 				<link rel="shortcut icon" type="image/png" href="img/favicon.ico"/>
 	  </head>
 	<body>
@@ -38,7 +39,8 @@
 
 		<!-- main content of the page -->
 		<div class="container">
-			<!-- input form -->
+
+			<!-- input form with examples -->
 			<div class="section">
 				<div id="form"></div>
 				<ul class="section list-inline">
@@ -50,12 +52,14 @@
 				</ul>
 			</div>
 
-			<!-- display results -->
+			<!-- results section -->
 			<div class="section" id="result">
+
+				<div id="loading">ImpactGeany is working ... wait for the Magic!</div>
 
 				<h3 class="section"><a id="title"></a></h3>
 
-					<!-- navigation by concepts -->
+					<!-- navigation for concepts -->
 					<ul class="nav nav-tabs" >
 						<li><a href="#" onclick="display('overview')">Overview</a></li>
 						<li><a href="#" onclick="display('scientific-impact')">Scientific impact</a></li>
@@ -66,7 +70,14 @@
 
 					<!-- overview -->
 					<div class="section concept" id="overview">
-						<canvas id="chartjs" width="30%"></canvas>
+						 <div class="row">
+							 <div class="col-lg-6">
+								 <canvas id="chartjs" width="30%"></canvas>
+								</div>
+									<div class="col-lg-6">
+										<div id="overviewviz"></div>
+									</div>
+							</div>
 					</div>
 
 					<!-- scientific-impact -->
@@ -74,9 +85,7 @@
 							<div class="alert alert-info">
 								<strong>Definition Scientific impact:</strong> The impact that a work has within the scientific community; is mostly based on citation-based indicators (e.g. publication impact as measured through citations or the number of publications (adopted from Neylon 2017).
 							</div>
-							<div class="alert alert-warning">
-								A fancy visualization will follow soon.
-							</div>
+							<div id="scientificimpactviz"></div>
 					</div>
 
 					<!-- societal-impact -->
@@ -84,7 +93,7 @@
 						<div class="alert alert-info">
 							<strong>Definition Societal impact:</strong> The impact that a work has within society. Recognition from societal groups or for societal activities; measurable impact (e.g via patents, citations in policy documents, mentions in social media, press).
 						</div>
-						<div id="paperbuzz"></div>
+						<div id="societalimpactviz"></div>
 					</div>
 
 					<!-- community -->
@@ -92,9 +101,7 @@
 						<div class="alert alert-info">
 							<strong>Definition Community:</strong> Involvement in the scientific community (e.g. participation in conferences, peer review and editorial activities, and learned societies)
 						</div>
-						<div class="alert alert-warning">
-							A fancy visualization will follow soon.
-						</div>
+						<div id="communityviz"></div>
 					</div>
 
 					<!-- openness -->
@@ -102,10 +109,7 @@
 						<div class="alert alert-info">
 							<strong>Definition Openness:</strong> Compliance of a person or work to Open Science Standards (e.g. FAIR research data (Findable, Accessible, Interoperable und Reusable), social openness (readability etc.).
 						</div>
-						<div class="alert alert-warning">
-							A fancy visualization will follow soon.
-						</div>
-						<div id="oa-status">
+						<div id="opennessviz">
 					</div>
 
 			</div>
