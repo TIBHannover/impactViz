@@ -1,4 +1,4 @@
-# ImpactGeany
+# ROSI Prototype
 
 A wizzard for open scientometric indicators
 
