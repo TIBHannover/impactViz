@@ -12,26 +12,24 @@ $(document).ready(function() {
 
     $('#result').css('display', 'block');
 
-    // get data from paperbuzz
-    d3.json('https://api.paperbuzz.org/v0/doi/' + identifier, function(json) {
+    $.getJSON('./schemas/work.json', function(config){
 
-      // remove loading info
-      $("#loading").remove();
+      // get data from paperbuzz
+      d3.json(config['api'] + identifier, function(json) {
 
-      // display title
-      $('#title').attr('href', 'http://dx.doi.org/' + json.doi).text(json.metadata.title);
+        // remove loading info
+        $("#loading").remove();
 
-      $.getJSON('./config.json', function(config){
+        // display title
+        $('#title').attr('href', 'http://dx.doi.org/' + json.doi).text(json.metadata.title);
 
-        // display overview and detailed views
-        displayOverview(json);
-        displayPaperbuzzviz(convertForConcept(json, config['scientific-impact']), scientificimpactviz);
-        displayPaperbuzzviz(convertForConcept(json, config['societal-impact']), societalimpactviz);
-        displayPaperbuzzviz(convertForConcept(json, config['community']), communityviz);
-        displayOpenness(json);
-
+          // display overview and detailed views
+          displayOverview(json, config['overview']);
+          displayPaperbuzzviz(convertForConcept(json, config['concepts']['scientific-impact']), scientificimpactviz);
+          displayPaperbuzzviz(convertForConcept(json, config['concepts']['societal-impact']), societalimpactviz);
+          displayPaperbuzzviz(convertForConcept(json, config['concepts']['community']), communityviz);
+          displayOpenness(json);
       });
-
     });
   }
 });
@@ -70,7 +68,7 @@ function displayForm(identifier, action){
             },
             "buttons":{
                 "submit":{
-                  "title": "Magic!"
+                  "title": "Visualize!"
                 }
             }
         }
@@ -110,21 +108,29 @@ function convertForConcept(json, sources){
 *
 * @param data
 */
-function displayOverview(data){
+function displayOverview(data, concepts){
 
-  display('overview');
+  display('overview'); // css stuff
 
   displayPaperbuzzviz(data, overviewviz, true);
 
-  // read and convert data to chart js json syntax
-  var sources = data.altmetrics_sources;
-  var displayData = convertForChart(sources);
+  // create json structure for chartjs data
+  var displayData = {}; datasets = []; labels = []; events = [];
+
+  // get data from each source and convert data according to json structure needed for the chart js
+  concepts.forEach(function(concept) {
+    events.push(Math.floor((Math.random() * 10) + 5)); // random number TODO: get real data
+    labels.push(concept);
+  });
+
+  datasets.push({data: events});
+  displayData.datasets = datasets;
+  displayData.labels = labels;
 
   // this creates the chartjs chart
   var myChart = new Chart($('#chartjs'), {
     data: displayData,
     type: 'polarArea'
-
   });
 }
 
@@ -181,24 +187,4 @@ function display(concept){
 
   $('.concept').css('display', 'none');
   $('#'+concept).css('display', 'block');
-}
-
-
-// convert data according to json structure needed for the chart js
-function convertForChart(sources){
-
-  // create json structure for chartjs data
-  var displayData = {}; datasets = []; labels = []; events = [];
-
-  // get data from each source
-  sources.forEach(function(source) {
-    events.push(source.events_count);
-    labels.push(source.source.display_name);
-  });
-
-  datasets.push({data: events});
-  displayData.datasets = datasets;
-  displayData.labels = labels;
-
-  return displayData;
 }

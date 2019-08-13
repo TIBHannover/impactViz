@@ -1,0 +1,10 @@
+{
+  "api": "https://api.paperbuzz.org/v0/doi/",
+  "overview": ["Scientific impact", "Societal impact", "Community", "Openness"],
+  "concepts": {
+    "scientific-impact":  ["f1000", "crossref", "datacite", "cambia-lens"],
+    "societal-impact":  ["wikipedia", "twitter", "wordpressdotcom", "newsfeed", "stackexchange", "web"],
+    "community": ["hypothesis", "stackexchange"],
+    "openness": ["unpaywall"]
+  }
+}
