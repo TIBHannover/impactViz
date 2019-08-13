@@ -21,12 +21,16 @@ $(document).ready(function() {
       // display title
       $('#title').attr('href', 'http://dx.doi.org/' + json.doi).text(json.metadata.title);
 
-      // display overview and detailed views
-      displayOverview(json);
-      displayPaperbuzzviz(convertForConcept(json, 'scientific-impact'), scientificimpactviz);
-      displayPaperbuzzviz(convertForConcept(json, 'societal-impact'), societalimpactviz);
-      displayPaperbuzzviz(convertForConcept(json, 'community'), communityviz);
-      displayOpenness(json);
+      $.getJSON('./config.json', function(config){
+
+        // display overview and detailed views
+        displayOverview(json);
+        displayPaperbuzzviz(convertForConcept(json, config['scientific-impact']), scientificimpactviz);
+        displayPaperbuzzviz(convertForConcept(json, config['societal-impact']), societalimpactviz);
+        displayPaperbuzzviz(convertForConcept(json, config['community']), communityviz);
+        displayOpenness(json);
+
+      });
 
     });
   }
@@ -76,40 +80,21 @@ function displayForm(identifier, action){
 
 
 /*
-* convert the json to only contain data for this concept
+* convert the json to only contain the required sources
 *
 * @param json
-* @param concept
+* @param sources
 */
-function convertForConcept(json, concept){
+function convertForConcept(json, sources){
 
   var data = JSON.parse(JSON.stringify(json));
-  var sources = [];
-
-  // TODO read this from a config file or api
-  switch (concept) {
-    case 'scientific-impact':
-      sources = ['wikipedia', 'f1000', 'crossref', 'datacite', 'cambia-lens'];
-      break;
-    case 'societal-impact':
-      sources = ['twitter', 'wordpressdotcom', 'reddit-links', 'reddit', 'newsfeed', 'stackexchange', 'web'];
-      break;
-    case 'community':
-      sources = ['hypothesis', 'stackexchange'];
-      break;
-    default:
-      sources = [];
-  }
-
   var i = 0; // index
 
-  for(object of data.altmetrics_sources){
+  for(var object of data.altmetrics_sources){
     var toss = true;
 
-    for(source of sources){
-
-      if(object.source_id == source)   toss = false;
-
+    for(var source of sources){
+      if(object.source_id == source) toss = false;
     }
     if(toss){ delete data.altmetrics_sources[i];}
 
