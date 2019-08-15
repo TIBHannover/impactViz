@@ -1,3 +1,6 @@
 [submodule "lib/paperbuzzviz"]
 	path = lib/paperbuzzviz
 	url = https://github.com/jalperin/paperbuzzviz.git
+[submodule "indicators"]
+	path = indicators
+	url = https://github.com/lilients/registry.git
