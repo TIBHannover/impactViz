@@ -7,32 +7,115 @@ $(document).ready(function() {
   // display form with alpaca.js
   displayForm(identifier, "impact.php");
 
-  // get data from paperbuzz and display results with paperbuzzviz and chartjs
   if(identifier != null){
 
     $('#result').css('display', 'block');
 
-    $.getJSON('./schemas/work.json', function(config){
+    // check the type of the identifier
+    var identifierType = getIdentifierType(identifier);
 
-      // get data from paperbuzz
-      d3.json(config['api'] + identifier, function(json) {
+    if (identifierType){
 
-        // remove loading info
-        $("#loading").remove();
+      // display work info if it is a doi and person info for an orcid
+      switch (identifierType) {
 
-        // display title
-        $('#title').attr('href', 'http://dx.doi.org/' + json.doi).text(json.metadata.title);
+        case "doi":
+          displayWork(identifier);
+          break;
 
-          // display overview and detailed views
-          displayOverview(json, config['overview']);
-          displayPaperbuzzviz(convertForConcept(json, config['concepts']['scientific-impact']), scientificimpactviz);
-          displayPaperbuzzviz(convertForConcept(json, config['concepts']['societal-impact']), societalimpactviz);
-          displayPaperbuzzviz(convertForConcept(json, config['concepts']['community']), communityviz);
-          displayOpenness(json);
-      });
-    });
+        case "orcid":
+          displayPerson(identifier);
+          break;
+
+        default:
+          break;
+      }
+    }else{
+      $('#result').text('Nope, try again.');
+    }
   }
 });
+
+
+/*
+* display data for the entity type person
+* get data from impactstory and display results with ?
+*
+* @param identifier
+*/
+function displayPerson(identifier){
+
+  $('#loading').text('Nice, an ORCID! Wait a second (or more) for the results ...');
+
+  $.getJSON('./schemas/person.json', function(config){
+
+    d3.json(config['api'] + identifier, function(json){
+
+      console.log(json);
+
+      // remove loading info and display title
+      $("#loading").remove();
+      $('#title').text(json._full_name);
+
+        displayOverview(json, config['overview']);
+
+    });
+
+  });
+
+}
+
+
+/*
+* display data for the entity type work
+* get data from paperbuzz and display results with paperbuzzviz and chartjs
+*
+* @param identifier
+*/
+function displayWork(identifier){
+
+  $('#loading').text('Ah yes, this seems to be a DOI. Wait a second (or more) for the results ...');
+
+  $.getJSON('./schemas/work.json', function(config){
+
+    // get data from paperbuzz
+    d3.json(config['api'] + identifier, function(json){
+
+      // remove loading info and display title
+      $('#loading').remove();
+      $('#title').attr('href', 'http://dx.doi.org/' + json.doi).text(json.metadata.title);
+
+      // get info about referenced by count directly from json
+      $('#referencedby').text('The publication has been referenced '+json['metadata']['is-referenced-by-count'] + ' times.');
+
+      // display overview and detailed views
+      displayOverview(json, config['overview']);
+      displayPaperbuzzviz(convertForConcept(json, config['concepts']['scientific-impact']), scientificimpactviz);
+      displayPaperbuzzviz(convertForConcept(json, config['concepts']['societal-impact']), societalimpactviz);
+      displayPaperbuzzviz(convertForConcept(json, config['concepts']['community']), communityviz);
+      displayOpenness(json);
+    });
+  });
+}
+
+
+/*
+* check identifierType with regular expressions (possible values: doi and orcid)
+*
+* @param identifier
+* @return identifierType
+*/
+function getIdentifierType(identifier){
+
+  const doiPattern = /^10.\d{4,9}\/[-._;()\/:a-zA-Z0-9]+$/gm;
+  const orcidPattern = /^\d{4}[-]\d{4}[-]\d{4}[-]\d{4}$/gm;
+
+  if (doiPattern.exec(identifier)) {
+    return "doi";
+  }else if (orcidPattern.exec(identifier)) {
+    return "orcid";
+  }
+}
 
 
 /*
