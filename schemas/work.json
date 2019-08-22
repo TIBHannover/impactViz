@@ -1,10 +1,62 @@
 {
+  "indicators":[
+    {
+      "id": 1,
+      "name": "citation count",
+      "source": "COCI",
+      "logo": "http://opencitations.net/static/img/logo.png",
+      "concept": "scientific-impact",
+      "api": "https://opencitations.net/index/coci/api/v1/metadata/",
+      "key": [0, "citation_count"]
+    },
+    {
+      "id": 2,
+      "name": "is referenced by",
+      "source": "paperbuzz",
+      "logo": "https://paperbuzz.org/static/img/paperbuzz-logo.png",
+      "concept": "societal-impact",
+      "api": "https://api.paperbuzz.org/v0/doi/",
+      "key": ["metadata", "is-referenced-by-count"]
+    },
+    {
+      "id": 3,
+      "name": "license",
+      "source": "paperbuzz",
+      "logo": "https://paperbuzz.org/static/img/paperbuzz-logo.png",
+      "concept": "openness",
+      "api": "https://api.paperbuzz.org/v0/doi/",
+      "key": ["open_access", "best_oa_location", "license"]
+    }
+  ],
+  "name": "Publication",
   "api": "https://api.paperbuzz.org/v0/doi/",
-  "overview": ["Scientific impact", "Societal impact", "Community", "Openness"],
+  "overview": [
+    "scientific-impact",
+    "societal-impact",
+    "community",
+    "openness"
+  ],
   "concepts": {
-    "scientific-impact":  ["f1000", "crossref", "datacite", "cambia-lens"],
-    "societal-impact":  ["wikipedia", "twitter", "wordpressdotcom", "newsfeed", "stackexchange", "web"],
-    "community": ["hypothesis", "stackexchange"],
-    "openness": ["unpaywall"]
+    "scientific-impact": [
+      "f1000",
+      "crossref",
+      "datacite"
+    ],
+    "societal-impact": [
+      "cambia-lens",
+      "wikipedia",
+      "twitter",
+      "wordpressdotcom",
+      "newsfeed",
+      "stackexchange",
+      "web"
+    ],
+    "community": [
+      "hypothesis",
+      "stackexchange"
+    ],
+    "openness": [
+      "unpaywall"
+    ]
   }
 }

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+				<!-- jquery -->
+				<script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+				<!-- bootstrap -->
+        <script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+				<link type="text/css" rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+				<!-- alpaca -->
+        <script type="text/javascript" src="node_modules/handlebars/dist/handlebars.js"></script>
+				<script type="text/javascript" src="node_modules/alpaca/dist/alpaca/bootstrap/alpaca.min.js"></script>
+				<link type="text/css" rel="stylesheet" href="node_modules/alpaca/dist/alpaca/bootstrap/alpaca.min.css" />
+				<!-- paperbuzzviz and d3js-->
+				<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script> <!-- TODO get via npm or git submodule -->
+				<script type="text/javascript" src="lib/paperbuzzviz/example/d3-tip.js"></script>
+				<script type="text/javascript" src="lib/paperbuzzviz/paperbuzzviz.js"></script>
+				<link rel="stylesheet" type="text/css" href="lib/paperbuzzviz/assets/css/paperbuzzviz.css" />
+				<!-- own scripts -->
+				<script type="text/javascript" src="js/basic.js"></script>
+				<script type="text/javascript" src="js/customize.js"></script>
+				<link type="text/css" rel="stylesheet" href="style/style.css">
+				<!-- favicon -->
+				<link rel="shortcut icon" type="image/png" href="img/favicon.ico"/>
+	  </head>
+	<body>
+
+		<!-- header -->
+	  <div id="header" class="header"></div>
+
+		<!-- main content of the page -->
+		<div class="container">
+
+      <!-- skeleton for the form -->
+      <form action="dao/set-data.php" method="post">
+          <div class="container">
+              <div id="form"></div> <!-- alpaca will fill in the form in this div -->
+              <a href="javascript:history.back()">Cancel</a>
+              <input type="submit" value="Save">
+          </div>
+      </form>
+
+    </div>
+
+
+		<!-- footer -->
+		<div class="container">
+			<div id="footer" class="footer">
+				<ul class="list-inline">
+					 <li><a href="mailto:rosi.project(at)tib.eu">Contact</a></li>
+					 <li><li><a href="https://www.tib.eu/en/service/data-protection/">Data protection</a></li>
+					 <li><a href="https://labs.tib.eu/info/en/imprint/">Imprint</a></li>
+					 <li><a href="https://github.com/TIBHannover/rosi-prototype">Code (GitHub)</a></li>
+				 </ul>
+			</div>
+		</div>
+
+	</body>
+</html>
