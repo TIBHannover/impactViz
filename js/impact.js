@@ -45,30 +45,63 @@ $(document).ready(function() {
 */
 async function getIndicator(indicator, identifier, callback){
 
-  await d3.json(indicator['api'] + identifier, function(json){
+  // get source info for this indicator
+  getSourceByName(indicator['source'], function(source){
 
-    $.each(indicator['key'], function(index, element){
-      json = json[element];
+    // call interface to get data for this identifier
+    d3.json(source['interface'] + identifier, function(json){
+
+      // find the dataset we want
+      $.each(indicator['key'], function(index, element){
+        json = json[element];
+      });
+
+      // write data to html
+      $('#'+indicator['concept']+"-results").append('<p>'+indicator['name']+" <img title='"+source['name']+"' class='source-icon' src="+source['image_url']+">: "+json).append(indicator['description']+"<br></p>");
+
+      callback(json);
+
     });
-
-    // write data to html
-//    $('#indicators').append(indicator['concept']+": " + indicator['name']+" <img title='"+indicator['source']+"' class='source-icon' src="+indicator['logo']+">: "+json+"<br>");
-    $('#'+indicator['concept']+"-results").append(indicator['name']+" (<img title='"+indicator['source']+"' class='source-icon' src="+indicator['logo']+">): "+json+"<br>");
-
-    callback(json);
 
   });
 
 }
 
 
-function getIndicators(indicators, identifier, callback){
+/*
+* get information about the source from json
+*
+* @param name
+*/
+function getSourceByName(name, callback){
+
+  // read json with infos on all sources
+  // TODO: read from registry
+  $.getJSON('./sources/data.json', function(sources){
+
+    $.each(sources, function(index, source){
+      if(source['name'] == name){
+        callback(source);
+      }
+    });
+  });
+
+}
+
+
+/*
+* get indicators for the entity defined by identifer
+*
+* @param indicators
+* @param identifier
+*/
+async function getIndicators(indicators, identifier, callback){
 
   var flower = new Object();
-//  flower['scientific-impact'] = 18;
-  flower['societal-impact'] = 10;
-  flower['community'] = 7;
-  flower['openness'] = 3;
+  flower['scientific-impact'] = 0;
+  flower['societal-impact'] = 0;
+  flower['community'] = 0;
+  flower['openness'] = 0;
 
   // get single indicators
   $.each(indicators, function(index, indicator){
@@ -76,78 +109,75 @@ function getIndicators(indicators, identifier, callback){
       getIndicator(indicator, identifier, function(value){
 
         if(Number.isInteger(Number(value))){
-          flower[indicator['concept']] = Number(value);
+          flower[indicator['concept']] += Number(value);
         }
 
         // return flower
-
+        callback(flower);
       });
-
-      console.log(flower);
-
   });
-
-  callback(flower);
-
 }
 
 /*
 * display data for a entity type
 * get data from paperbuzz and display results with paperbuzzviz and chartjs
 *
+* @param entity
 * @param identifier
 */
 function displayEntityByIdentifier(entity, identifier){
 
-    $('#loading').text('Ah yes, this seems to be a '+entity+'. Please be patient while we are collecting the data. This may take a while.');
+  // loading message
+  $('#loading').text('Ah yes, this seems to be a '+entity+'. Please be patient while we are collecting the data. This may take a while.');
 
-    // get schema for this entity type
-    $.getJSON('./schemas/'+entity+'.json', function(schema){
+  // get schema for this entity type
+  $.getJSON('./entities/'+entity+'.json', function(schema){
 
-      // get data from paperbuzz
-      d3.json(schema['api'] + identifier, function(json){
+    // get data from paperbuzz
+    d3.json(schema['api'] + identifier, function(json){
 
-        // remove loading info and display title
-        $('#loading').remove();
+      // remove loading info and display title
+      $('#loading').remove();
 
-        // handle entities differently
-        switch(entity){
+      // handle entities differently
+      switch(entity){
 
-          case 'person':
-            $('#title').text(json._full_name);
-            break;
+        case 'person':
+          $('#title').text(json._full_name);
+          break;
 
-          case 'work':
+        case 'work':
 
-            getIndicators(schema['indicators'], identifier, function(flower){
-          //    console.log(flower);
-              displayFlower(flower, schema['overview']);
-            });
+          // display empty flower
+          flowerChart = new Chart($('#chartjs'), {
+            type: 'polarArea'
+          });
 
-            $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
+          // get the indicators for this entity by identifier
+          getIndicators(schema['indicators'], identifier, function(flower){
+            displayFlower(flower, schema['overview']);
+          });
 
-            // display overview and detailed views
-            display('overview'); // css stuff
-            displayPaperbuzzviz(json, overviewviz, true);
+          $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
 
-            // display paperbuzz data with paperbuzzviz
-            displayPaperbuzzviz(convertForConcept(json, schema['concepts']['scientific-impact']), scientificimpactviz);
-            displayPaperbuzzviz(convertForConcept(json, schema['concepts']['societal-impact']), societalimpactviz);
-            displayPaperbuzzviz(convertForConcept(json, schema['concepts']['community']), communityviz);
+          // display overview and detailed views
+          display('overview'); // css stuff
+          displayPaperbuzzviz(json, overviewviz, true);
 
-            // display openness
-            if(json.open_access.is_oa){
-              $("#opennessviz").append('<img src="img/open.svg">');
-            }
+          // display paperbuzz data with paperbuzzviz
+          displayPaperbuzzviz(convertForConcept(json, schema['concepts']['scientific-impact']), scientificimpactviz);
+          displayPaperbuzzviz(convertForConcept(json, schema['concepts']['societal-impact']), societalimpactviz);
+          displayPaperbuzzviz(convertForConcept(json, schema['concepts']['community']), communityviz);
 
-            break;
-        }
+          // display openness
+          if(json.open_access.is_oa){
+            $("#opennessviz").append('<img src="img/open.svg">');
+          }
 
-
-      });
-
+          break;
+      }
     });
-
+  });
 }
 
 
@@ -245,27 +275,28 @@ function convertForConcept(json, sources){
 */
 function displayFlower(data, concepts){
 
-  console.log(data);
-  console.log(concepts);
+    // create json structure for chartjs data
+    var displayData = {}; datasets = []; labels = []; events = [];
 
-  // create json structure for chartjs data
-  var displayData = {}; datasets = []; labels = []; events = [];
+    // get data from each source and convert data according to json structure needed for the chart js
+    concepts.forEach(function(concept) {
+      events.push(data[concept]);
+      labels.push(concept);
+    });
 
-  // get data from each source and convert data according to json structure needed for the chart js
-  concepts.forEach(function(concept) {
-    events.push(data[concept]);
-    labels.push(concept);
-  });
+    datasets.push({data: events});
+    displayData.datasets = datasets;
+    displayData.labels = labels;
 
-  datasets.push({data: events});
-  displayData.datasets = datasets;
-  displayData.labels = labels;
+    // remove existing and create new
+    $('#chartjs').remove();
+    $('#graph-container').append('<canvas id="chartjs"><canvas>')
 
-  // this creates the chartjs chart
-  var myChart = new Chart($('#chartjs'), {
-    data: displayData,
-    type: 'polarArea'
-  });
+    // this creates the chartjs chart
+    flowerChart = new Chart($('#chartjs'), {
+      data: displayData,
+      type: 'polarArea'
+    });
 
 }
 
@@ -282,10 +313,10 @@ function displayPaperbuzzviz(data, vizDiv, showMini = false){
         minItemsToShowGraph: {
             minEventsForYearly: 1,
             minEventsForMonthly: 1,
-            minEventsForDaily: 1,
+            minEventsForDaily: 5,
             minYearsForYearly: 1,
-            minMonthsForMonthly: 1,
-            minDaysForDaily: 1 //first 30 days only
+            minMonthsForMonthly: 5,
+            minDaysForDaily: 5 //first 30 days only
             },
         graphheight: 200,
         graphwidth:  500,
