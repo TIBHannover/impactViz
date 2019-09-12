@@ -51,7 +51,7 @@ async function callInterface(indicator, identifier, callback){
     getSourceByName(indicator['source'], function(source){
 
       // call interface to get data for this identifier
-      d3.json(source['interface'] + identifier, function(json){
+      $.getJSON(source['interface'] + identifier, function(json){
 
         // find the dataset we want
         $.each(indicator['key'], function(index, element){
@@ -161,7 +161,7 @@ function displayEntityByIdentifier(entity, identifier){
   $.getJSON('./entities/'+entity+'.json', function(schema){
 
     // get data from paperbuzz
-    d3.json(schema['api'] + identifier, function(json){
+    $.getJSON(schema['api'] + identifier, function(json){
 
       // remove loading info and display title
       $('#loading').remove();

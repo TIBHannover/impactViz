@@ -194,7 +194,7 @@
         "category": "Other",
         "entity": "Work",
         "licence": "https:\/\/creativecommons.org\/publicdomain\/zero\/1.0\/",
-        "interface": "http:\/\/opencitations.net\/index\/coci\/api\/v1\/metadata/",
+        "interface": "https:\/\/opencitations.net\/index\/coci\/api\/v1\/metadata/",
         "interface_type": "REST API",
         "documentation": "http:\/\/opencitations.net\/index\/coci\/api\/v1",
         "data_format": "JSON",
