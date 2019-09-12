@@ -1,54 +1,5 @@
 {
-  "indicators":[
-    {
-      "id": 1,
-      "name": "Citation count",
-      "description": "this is a description of the indicator citation count",
-      "concept": "scientific-impact",
-      "source": "COCI",
-      "key": [0, "citation_count"]
-    },
-    {
-      "id": 2,
-      "name": "Citation count",
-      "description": "this is a description of the indicator is referenced by",
-      "concept": "scientific-impact",
-      "source": "Paperbuzz",
-      "key": ["metadata", "is-referenced-by-count"]
-    },
-    {
-      "id": 3,
-      "name": "License",
-      "description": "this is a description of the indicator license",
-      "concept": "openness",
-      "source": "Paperbuzz",
-      "key": ["open_access", "best_oa_location", "license"]
-    },
-    {
-      "id": 4,
-      "name": "Has repo copy",
-      "description": "this is a description of the indicator has repo copy",
-      "concept": "openness",
-      "source": "Paperbuzz",
-      "key": ["open_access", "has_repository_copy"]
-    },
-    {
-      "id": 5,
-      "name": "Is oa",
-      "description": "type of oa publication (gold, green, etc.)",
-      "concept": "openness",
-      "source": "Paperbuzz",
-      "key": ["open_access", "is_oa"]
-    },
-    {
-      "id": 6,
-      "name": "OA status",
-      "description": "this is a description of the indicator oa status",
-      "concept": "openness",
-      "source": "Paperbuzz",
-      "key": ["open_access", "oa_status"]
-    }
-  ],
+  "indicators":[0,1,2,3,4,5],
   "name": "Publication",
   "api": "https://api.paperbuzz.org/v0/doi/",
   "overview": [
@@ -69,7 +20,6 @@
       "twitter",
       "wordpressdotcom",
       "newsfeed",
-      "stackexchange",
       "web",
       "reddit"
     ],

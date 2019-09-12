@@ -7,8 +7,10 @@ $(document).ready(function() {
   // display form with alpaca.js
   displayForm(identifier, "impact.php");
 
+  // do something with the identifier
   if(identifier != null){
 
+    // display result
     $('#result').css('display', 'block');
 
     // check the type of the identifier
@@ -16,7 +18,7 @@ $(document).ready(function() {
 
     if (identifierType){
 
-      // display work info if it is a doi and person info for an orcid
+      // handle entity types
       switch (identifierType) {
 
         case "doi":
@@ -40,31 +42,52 @@ $(document).ready(function() {
 /*
 * get the data of this indicator for the entity defined by identifier
 *
-* @param indicator
+* @param indicatorId
 * @param identifier
 */
-async function getIndicator(indicator, identifier, callback){
+async function callInterface(indicator, identifier, callback){
 
-  // get source info for this indicator
-  getSourceByName(indicator['source'], function(source){
+    // get source info for this indicator
+    getSourceByName(indicator['source'], function(source){
 
-    // call interface to get data for this identifier
-    d3.json(source['interface'] + identifier, function(json){
+      // call interface to get data for this identifier
+      d3.json(source['interface'] + identifier, function(json){
 
-      // find the dataset we want
-      $.each(indicator['key'], function(index, element){
-        json = json[element];
+        // find the dataset we want
+        $.each(indicator['key'], function(index, element){
+          json = json[element];
+        });
+
+        // write data to html
+        $('#'+indicator['concept']+"-results").append(
+          '<div class="paperbuzz-source-row paperbuzz-compact" style="width: 200px"><div class="paperbuzz-source-heading">'+indicator['name']+" <img title='"+source['name']+"' class='source-icon' src="+source['image_url']+"> "+json + "</div></div>");
+
+        callback(json);
+
       });
-
-      // write data to html
-      $('#'+indicator['concept']+"-results").append('<p>'+indicator['name']+" <img title='"+source['name']+"' class='source-icon' src="+source['image_url']+">: "+json).append(indicator['description']+"<br></p>");
-
-      callback(json);
-
     });
+}
 
+
+/*
+* get indicator by id
+*
+* @param indicatorId
+*/
+function getIndicatorById(indicatorId, callback){
+
+  // read metadata of this indicator from json
+  $.getJSON('./indicators/data/data.json', function(indicators){
+
+    $.each(indicators, function(index, indicator){
+
+      if(indicatorId == indicator['id']){
+
+        callback(indicator);
+
+      }
+    });
   });
-
 }
 
 
@@ -95,7 +118,7 @@ function getSourceByName(name, callback){
 * @param indicators
 * @param identifier
 */
-async function getIndicators(indicators, identifier, callback){
+function getIndicators(indicators, identifier, callback){
 
   var flower = new Object();
   flower['scientific-impact'] = 0;
@@ -104,17 +127,21 @@ async function getIndicators(indicators, identifier, callback){
   flower['openness'] = 0;
 
   // get single indicators
-  $.each(indicators, function(index, indicator){
+  $.each(indicators, function(index, indicatorId){
 
-      getIndicator(indicator, identifier, function(value){
+    // get metadata of this indicator
+    getIndicatorById(indicatorId, function(indicator){
 
-        if(Number.isInteger(Number(value))){
-          flower[indicator['concept']] += Number(value);
+      // call api and store data in flower array
+      callInterface(indicator, identifier, function(value){
+
+        if(Number.isInteger(Number(value)) && flower[indicator['concept']] <= value){
+          flower[indicator['concept']] = Number(value);
         }
 
-        // return flower
         callback(flower);
       });
+    });
   });
 }
 
@@ -153,18 +180,21 @@ function displayEntityByIdentifier(entity, identifier){
             type: 'polarArea'
           });
 
-          // get the indicators for this entity by identifier
+          // get the indicators for this entity by identifier and fill flower with data
           getIndicators(schema['indicators'], identifier, function(flower){
             displayFlower(flower, schema['overview']);
           });
 
           $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
 
-          // display overview and detailed views
+          // display overview for each concept
           display('overview'); // css stuff
-          displayPaperbuzzviz(json, overviewviz, true);
+          displayPaperbuzzviz(convertForConcept(json, schema['concepts']['scientific-impact']), scientificimpactoverviewviz, true);
+          displayPaperbuzzviz(convertForConcept(json, schema['concepts']['societal-impact']), societalimpactoverviewviz, true);
+          displayPaperbuzzviz(convertForConcept(json, schema['concepts']['community']), communityoverviewviz, true);
+          displayPaperbuzzviz(convertForConcept(json, schema['concepts']['openness']), opennessoverviewviz, true);
 
-          // display paperbuzz data with paperbuzzviz
+          // display detailed views (paperbuzz data with paperbuzzviz)
           displayPaperbuzzviz(convertForConcept(json, schema['concepts']['scientific-impact']), scientificimpactviz);
           displayPaperbuzzviz(convertForConcept(json, schema['concepts']['societal-impact']), societalimpactviz);
           displayPaperbuzzviz(convertForConcept(json, schema['concepts']['community']), communityviz);
