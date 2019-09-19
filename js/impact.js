@@ -18,6 +18,13 @@ $(document).ready(function() {
 
     if (identifierType){
 
+      // result object
+      results = new Object();
+      results['scientific-impact'] = new Object();
+      results['societal-impact'] = new Object();
+      results['community'] = new Object();
+      results['openness'] = new Object();
+
       // handle entity types
       switch (identifierType) {
 
@@ -47,25 +54,22 @@ $(document).ready(function() {
 */
 async function callInterface(indicator, identifier, callback){
 
-    // get source info for this indicator
-    getSourceByName(indicator['source'], function(source){
+    // call interface to get data for this identifier
+    $.getJSON(indicator.interface + identifier, function(json){
 
-      // call interface to get data for this identifier
-      $.getJSON(source['interface'] + identifier, function(json){
-
-        // find the dataset we want
-        $.each(indicator['key'], function(index, element){
-          json = json[element];
-        });
-
-        // write data to html
-        $('#'+indicator['concept']+"-results").append(
-          '<div class="paperbuzz-source-row paperbuzz-compact" style="width: 200px"><div class="paperbuzz-source-heading">'+indicator['name']+" <img title='"+source['name']+"' class='source-icon' src="+source['image_url']+"> "+json + "</div></div>");
-
-        callback(json);
-
+      // find the dataset we want
+      $.each(indicator['key'], function(index, element){
+        if(json) json = json[element];
       });
+
+      // write data to html
+      $('#'+indicator['concept']+"-results").append(
+        '<div class="paperbuzz-source-row paperbuzz-compact" style="width: 400px"><div class="paperbuzz-source-heading">'+indicator['name']+': '+json+'</div></div>');
+
+      callback(json);
+
     });
+
 }
 
 
@@ -92,54 +96,28 @@ function getIndicatorById(indicatorId, callback){
 
 
 /*
-* get information about the source from json
-*
-* @param name
-*/
-function getSourceByName(name, callback){
-
-  // read json with infos on all sources
-  // TODO: read from registry
-  $.getJSON('./sources/data.json', function(sources){
-
-    $.each(sources, function(index, source){
-      if(source['name'] == name){
-        callback(source);
-      }
-    });
-  });
-
-}
-
-
-/*
 * get indicators for the entity defined by identifer
 *
-* @param indicators
+* @param indicatorIds
 * @param identifier
+* @returns indicators
 */
-function getIndicators(indicators, identifier, callback){
-
-  var flower = new Object();
-  flower['scientific-impact'] = 0;
-  flower['societal-impact'] = 0;
-  flower['community'] = 0;
-  flower['openness'] = 0;
+function getIndicators(indicatorIds, identifier, callback){
 
   // get single indicators
-  $.each(indicators, function(index, indicatorId){
+  $.each(indicatorIds, function(index, indicatorId){
 
     // get metadata of this indicator
     getIndicatorById(indicatorId, function(indicator){
 
-      // call api and store data in flower array
+      // call api
       callInterface(indicator, identifier, function(value){
 
-        if(Number.isInteger(Number(value)) && flower[indicator['concept']] <= value){
-          flower[indicator['concept']] = Number(value);
-        }
+        // store in array
+        results[indicator.concept][indicator.name] = value;
 
-        callback(flower);
+        callback(results);
+
       });
     });
   });
@@ -175,36 +153,27 @@ function displayEntityByIdentifier(entity, identifier){
 
         case 'work':
 
-          // display empty flower
-          flowerChart = new Chart($('#chartjs'), {
-            type: 'polarArea'
-          });
-
-          // get the indicators for this entity by identifier and fill flower with data
-          getIndicators(schema['indicators'], identifier, function(flower){
-            displayFlower(flower, schema['overview']);
-          });
-
-          $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
-
           // display overview for each concept
           display('overview'); // css stuff
-          displayPaperbuzzviz(convertForConcept(json, schema['concepts']['scientific-impact']), scientificimpactoverviewviz, true);
-          displayPaperbuzzviz(convertForConcept(json, schema['concepts']['societal-impact']), societalimpactoverviewviz, true);
-          displayPaperbuzzviz(convertForConcept(json, schema['concepts']['community']), communityoverviewviz, true);
-          displayPaperbuzzviz(convertForConcept(json, schema['concepts']['openness']), opennessoverviewviz, true);
 
           // display detailed views (paperbuzz data with paperbuzzviz)
-          displayPaperbuzzviz(convertForConcept(json, schema['concepts']['scientific-impact']), scientificimpactviz);
-          displayPaperbuzzviz(convertForConcept(json, schema['concepts']['societal-impact']), societalimpactviz);
-          displayPaperbuzzviz(convertForConcept(json, schema['concepts']['community']), communityviz);
+          displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['scientific-impact'], 'scientific-impact'), scientificimpactviz);
+          displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['societal-impact'], 'societal-impact'), societalimpactviz);
+          displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['community'], 'community'), communityviz);
 
-          // display openness
-          if(json.open_access.is_oa){
-            $("#opennessviz").append('<img src="img/open.svg">');
-          }
+          // display title of the work
+          $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
 
-          break;
+          // get the indicators for this entity by identifier
+          getIndicators(schema['indicators'], identifier, function(results){
+
+            // display a visualisation for each concept at overview
+            $.each(schema.concepts, function(concept){
+
+              displayImpactByConcept(results, concept, schema['visualisation'][concept]);
+
+            });
+          });
       }
     });
   });
@@ -228,6 +197,7 @@ function getIdentifierType(identifier){
     return "orcid";
   }
 }
+
 
 /*
 * add query form with alpaca to the page
@@ -272,12 +242,73 @@ function displayForm(identifier, action){
 
 
 /*
+* display overview for a concept with chartjs
+*
+* @param data
+* @param concept
+*/
+function displayImpactByConcept(data, concept, visualisation = 'pie'){
+
+  var displayData = [];
+  var labels = [];
+  var label = "";
+
+  switch (concept) {
+    case 'scientific-impact':
+      label = 'Citations (Paperbuzz)';
+      break;
+    case 'societal-impact':
+      label = 'twitter';
+      displayData.push(+data[concept][label]);
+      labels.push(label);
+      label = 'wikipedia';
+      break;
+    case 'community':
+      label = 'stackexchange';
+      break;
+    case 'openness':
+      label = 'Open Access';
+      break;
+    default:
+      label = "";
+    }
+
+    displayData.push(+data[concept][label]); // boolean to 0 / 1 with +
+    labels.push(label);
+
+    // store data for chart
+    var datasets = {
+      datasets: [{
+          data: displayData,
+          backgroundColor: ['rgba(247,70,74,0.8)']
+      }],
+      labels: labels
+    };
+
+    // hide legend
+    var options = {
+      legend: {
+          display: false
+      }
+    }
+
+    // create chart
+    chart = new Chart($('#'+concept+'-overview'), {
+      type: visualisation,
+      data: datasets,
+      options: options
+    });
+
+}
+
+
+/*
 * convert the json to only contain the required sources
 *
 * @param json
 * @param sources
 */
-function convertForConcept(json, sources){
+function convertPaperbuzzData(json, sources, concept = ""){
 
   var data = JSON.parse(JSON.stringify(json));
   var i = 0; // index
@@ -287,6 +318,7 @@ function convertForConcept(json, sources){
 
     for(var source of sources){
       if(object.source_id == source) toss = false;
+      if(concept) results[concept][object.source_id] = object.events_count;
     }
     if(toss){ delete data.altmetrics_sources[i];}
 
@@ -294,40 +326,6 @@ function convertForConcept(json, sources){
   }
 
   return data;
-}
-
-
-/*
-* display flower with chartjs
-*
-* @param data
-* @param concepts
-*/
-function displayFlower(data, concepts){
-
-    // create json structure for chartjs data
-    var displayData = {}; datasets = []; labels = []; events = [];
-
-    // get data from each source and convert data according to json structure needed for the chart js
-    concepts.forEach(function(concept) {
-      events.push(data[concept]);
-      labels.push(concept);
-    });
-
-    datasets.push({data: events});
-    displayData.datasets = datasets;
-    displayData.labels = labels;
-
-    // remove existing and create new
-    $('#chartjs').remove();
-    $('#graph-container').append('<canvas id="chartjs"><canvas>')
-
-    // this creates the chartjs chart
-    flowerChart = new Chart($('#chartjs'), {
-      data: displayData,
-      type: 'polarArea'
-    });
-
 }
 
 

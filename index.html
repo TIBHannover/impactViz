@@ -37,6 +37,7 @@
 			<!-- input form with examples -->
 			<div class="section">
 				<div id="form"></div>
+				<div id="upload"></div>
 				<ul class="section list-inline">
 					<li><a href="index.html?identifier=10.1371/journal.pone.0165367"> example 1</a></li> <!-- The Effect of Gender in the Publication Patterns in Mathematics -->
 					<li><a href="index.html?identifier=10.3897/rio.4.e31656">example 2</a></li> <!-- Reference implementation for open scientometric indicators (ROSI) -->
@@ -65,31 +66,36 @@
 					<!-- overview -->
 					<div class="section concept" id="overview">
 						<div class="row">
-							<div class="col-lg-6">
+							<div class="col-lg-3">
+
 								<div class="section">
-									<div id="scientific-impact-results"><h4>Scientific Impact</h4></div>
-										<div id="scientificimpactoverviewviz"></div>
-								</div>
-								<div class="section">
-									<div id="societal-impact-results"><h4>Societal Impact</h4></div>
-										<div id="societalimpactoverviewviz"></div>
-								</div>
-								<div class="section">
-									<div id="community-results"><h4>Community</h4></div>
-										<div id="communityoverviewviz"></div>
-								</div>
-								<div class="section">
-									<div id="openness-results"><h4>Openness</h4></div>
-										<div id="opennessoverviewviz"></div>
+									<h4>Scientific Impact</h4>
+									<canvas id="scientific-impact-overview" width="30%"></canvas>
 								</div>
 							</div>
-							<div class="col-lg-6">
-								<div id=graph-container>
-										<canvas id="chartjs" width="30%"></canvas>
+
+							<div class="col-lg-3">
+								<div class="section">
+									<h4>Societal Impact</h4>
+									<canvas id="societal-impact-overview" width="30%"></canvas>
 								</div>
+							</div>
+
+							<div class="col-lg-3">
+								<div class="section">
+									<h4>Community</h4>
+									<canvas id="community-overview" width="30%"></canvas>
+								</div>
+							</div>
+
+							<div class="col-lg-3">
+								<div class="section">
+									<h4>Openness</h4>
+									<canvas id="openness-overview" width="30%"></canvas>
+								</div>
+
 							</div>
 						</div>
-
 					</div>
 
 					<!-- scientific-impact -->
@@ -98,6 +104,7 @@
 								<strong>Definition Scientific impact:</strong> The impact that a work has within the scientific community; is mostly based on citation-based indicators (e.g. publication impact as measured through citations or the number of publications (adopted from Neylon 2017).
 							</div>
 							<div id="scientific-impact-results"></div>
+							<div id="scientificimpactoverviewviz"></div>
 							<div id="scientificimpactviz"></div>
 					</div>
 
@@ -107,6 +114,7 @@
 							<strong>Definition Societal impact:</strong> The impact that a work has within society. Recognition from societal groups or for societal activities; measurable impact (e.g via patents, citations in policy documents, mentions in social media, press).
 						</div>
 						<div id="societal-impact-results"></div>
+						<div id="societalimpactoverviewviz"></div>
 						<div id="societalimpactviz"></div>
 					</div>
 
@@ -116,6 +124,7 @@
 							<strong>Definition Community:</strong> Involvement in the scientific community (e.g. participation in conferences, peer review and editorial activities, and learned societies)
 						</div>
 						<div id="community-results"></div>
+						<div id="communityoverviewviz"></div>
 						<div id="communityviz"></div>
 					</div>
 
@@ -125,6 +134,7 @@
 							<strong>Definition Openness:</strong> Compliance of a person or work to Open Science Standards (e.g. FAIR research data (Findable, Accessible, Interoperable und Reusable), social openness (readability etc.).
 						</div>
 						<div id="openness-results"></div>
+						<div id="opennessoverviewviz"></div>
 						<div id="opennessviz">
 					</div>
 
