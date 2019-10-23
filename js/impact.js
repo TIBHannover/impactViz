@@ -1,11 +1,11 @@
 $(document).ready(function() {
 
-  // get identifier from url
+  // get variables from url
   let params = new URLSearchParams(location.search);
   let identifier = params.get('identifier');
 
-  // display form with alpaca.js
-  displayForm(identifier, "impact.php");
+  // display search form with alpaca.js
+  displaySearchForm(identifier);
 
   // do something with the identifier
   if(identifier != null){
@@ -67,9 +67,7 @@ async function callInterface(indicator, identifier, callback){
         '<div class="paperbuzz-source-row paperbuzz-compact" style="width: 400px"><div class="paperbuzz-source-heading">'+indicator['name']+': '+json+'</div></div>');
 
       callback(json);
-
     });
-
 }
 
 
@@ -135,14 +133,20 @@ function displayEntityByIdentifier(entity, identifier){
   // loading message
   $('#loading').text('Ah yes, this seems to be a '+entity+'. Please be patient while we are collecting the data. This may take a while.');
 
+  // read schema from url (use entity name as default if not existing)
+  let params = new URLSearchParams(location.search);
+  let schemaFile = params.get('schema') || entity;
+
   // get schema for this entity type
-  $.getJSON('./entities/'+entity+'.json', function(schema){
+  $.getJSON('./entities/'+schemaFile+'.json', function(schema){
 
     // get data from paperbuzz
     $.getJSON(schema['api'] + identifier, function(json){
 
       // remove loading info and display title
       $('#loading').remove();
+      display('overview'); // css stuff
+      displayCustomizeForm();
 
       // handle entities differently
       switch(entity){
@@ -152,29 +156,26 @@ function displayEntityByIdentifier(entity, identifier){
           break;
 
         case 'work':
-
-          // display overview for each concept
-          display('overview'); // css stuff
+          // display title of the work
+          $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
 
           // display detailed views (paperbuzz data with paperbuzzviz)
           displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['scientific-impact'], 'scientific-impact'), scientificimpactviz);
           displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['societal-impact'], 'societal-impact'), societalimpactviz);
           displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['community'], 'community'), communityviz);
 
-          // display title of the work
-          $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
-
-          // get the indicators for this entity by identifier
-          getIndicators(schema['indicators'], identifier, function(results){
-
-            // display a visualisation for each concept at overview
-            $.each(schema.concepts, function(concept){
-
-              displayImpactByConcept(results, concept, schema['visualisation'][concept]);
-
-            });
-          });
+          break;
       }
+
+      // get the indicators for this entity by identifier
+      getIndicators(schema['indicators'], identifier, function(results){
+
+        // display a visualisation for each concept at overview
+        $.each(schema.concepts, function(concept){
+          displayImpactByConcept(results, concept, schema['visualisation'][concept]);
+        });
+      });
+
     });
   });
 }
@@ -205,38 +206,58 @@ function getIdentifierType(identifier){
 * @param identifier
 * @param action
 */
-function displayForm(identifier, action){
-
-  if(identifier != null){
-    action += "?identifier="+identifier;
-  }
+function displaySearchForm(identifier){
 
   $("#form").alpaca({
-    "data": {
-      "identifier": identifier
-    },
-    "schema": {
-        "type":"object",
-        "properties": {
-            "identifier": {
-                "type":"string",
-                "title":"Identifier"
+    "data": identifier,
+    "options": {
+      "label": "Identifier",
+      "form": {
+        "buttons": {
+          "view": {
+            "label": "Visualize!",
+            "click": function() {
+             window.location.href = window.location.pathname + '?identifier=' + this.getValue();
             }
+          }
         }
+      }
+    }
+  });
+}
+
+
+/**
+* display customize form
+*/
+function displayCustomizeForm(){
+
+  let params = new URLSearchParams(location.search);
+  let schema = params.get('schema') || "work";
+
+  // TODO: read configurations from somewhere
+  $("#customize").alpaca({
+    "data": [schema],
+    "schema": {
+      "enum": ["work", "work-customized"],
+      "required": true
     },
     "options": {
-        "form":{
-            "attributes":{
-                "action": action,
-                "method":"post"
-            },
-            "buttons":{
-                "submit":{
-                  "title": "Visualize!"
+        "type": "select",
+        "optionLabels": ["Default publication", "Customized publication"],
+        "form": {
+            "buttons": {
+                "view": {
+                    "label": "Customize!",
+                    "click": function() {
+                      let params = new URLSearchParams(location.search);
+                      let identifier = params.get('identifier');
+                      window.location.href = window.location.pathname + '?identifier='+ identifier + '&schema=' + this.getValue();
+                    }
                 }
             }
         }
-      }
+    }
   });
 }
 
@@ -253,8 +274,12 @@ function displayImpactByConcept(data, concept, visualisation = 'pie'){
   var labels = [];
   var label = "";
 
+  // TODO: read from config
   switch (concept) {
     case 'scientific-impact':
+      label = 'Citations (COCI)';
+      displayData.push(+data[concept][label]);
+      labels.push(label);
       label = 'Citations (Paperbuzz)';
       break;
     case 'societal-impact':
@@ -298,7 +323,6 @@ function displayImpactByConcept(data, concept, visualisation = 'pie'){
       data: datasets,
       options: options
     });
-
 }
 
 

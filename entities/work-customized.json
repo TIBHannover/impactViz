@@ -1,5 +1,5 @@
 {
-  "indicators":[0,1,2,3,4,5],
+  "indicators":[3,4],
   "name": "Publication",
   "api": "https://api.paperbuzz.org/v0/doi/",
   "overview": [
@@ -9,9 +9,9 @@
     "openness"
   ],
   "visualisation": {
-    "scientific-impact": "horizontalBar",
+    "scientific-impact": "polarArea",
     "societal-impact": "doughnut",
-    "community": "polarArea",
+    "community": "horizontalBar",
     "openness": "doughnut"
   },
   "concepts": {

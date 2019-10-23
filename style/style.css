@@ -23,6 +23,11 @@
   width: 20px;
 }
 
+#customize{
+  width: 30%;
+  float: right;
+}
+
 /* header */
 
 .header {
