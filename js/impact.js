@@ -133,19 +133,17 @@ function displayEntityByIdentifier(entity, identifier){
   // loading message
   $('#loading').text('Ah yes, this seems to be a '+entity+'. Please be patient while we are collecting the data. This may take a while.');
 
-  // read schema from url (use entity name as default if not existing)
-  let params = new URLSearchParams(location.search);
-  let schemaFile = params.get('schema') || entity;
-
   // get schema for this entity type
-  $.getJSON('./entities/'+schemaFile+'.json', function(schema){
+  $.getJSON('./entities/'+entity+'.json', function(schema){
 
     // get data from paperbuzz
     $.getJSON(schema['api'] + identifier, function(json){
 
-      // remove loading info and display title
+      // remove loading info
       $('#loading').remove();
       display('overview'); // css stuff
+
+      // display dropdown
       displayCustomizeForm();
 
       // handle entities differently
@@ -167,13 +165,21 @@ function displayEntityByIdentifier(entity, identifier){
           break;
       }
 
-      // get the indicators for this entity by identifier
-      getIndicators(schema['indicators'], identifier, function(results){
+      // read schema from url (use entity name as default if not existing)
+      let params = new URLSearchParams(location.search);
+      let schemaId = params.get('schema') || "0";
+
+      $.getJSON('./customize/data/data.json', function(customize){
+
+        // get the indicators for this entity by identifier
+        getIndicators(customize[schemaId]["indicators"], identifier, function(results){
 
         // display a visualisation for each concept at overview
         $.each(schema.concepts, function(concept){
-          displayImpactByConcept(results, concept, schema['visualisation'][concept]);
+            displayImpactByConcept(results, concept, schema['visualisation'][concept]);
+          });
         });
+
       });
 
     });
@@ -229,35 +235,50 @@ function displaySearchForm(identifier){
 
 /**
 * display customize form
+* read available schema from json file
 */
 function displayCustomizeForm(){
 
-  let params = new URLSearchParams(location.search);
-  let schema = params.get('schema') || "work";
+  $.getJSON('./customize/data/data.json', function(customize){
 
-  // TODO: read configurations from somewhere
-  $("#customize").alpaca({
-    "data": [schema],
-    "schema": {
-      "enum": ["work", "work-customized"],
-      "required": true
-    },
-    "options": {
-        "type": "select",
-        "optionLabels": ["Default publication", "Customized publication"],
-        "form": {
-            "buttons": {
-                "view": {
-                    "label": "Customize!",
-                    "click": function() {
-                      let params = new URLSearchParams(location.search);
-                      let identifier = params.get('identifier');
-                      window.location.href = window.location.pathname + '?identifier='+ identifier + '&schema=' + this.getValue();
-                    }
-                }
-            }
-        }
-    }
+    // store ids and names of schemas
+    var schemas = {};
+    schemas.ids = [];
+    schemas.names = [];
+
+    $.each(customize, function(index, element){
+      schemas.ids.push(element.id);
+      schemas.names.push(element.name);
+    });
+
+    // get schema from url or use default 0
+    let params = new URLSearchParams(location.search);
+    let schema = params.get('schema') || "0";
+
+    // create dropdown with available schema
+    $("#customize").alpaca({
+      "data": [schema],
+      "schema": {
+        "enum": schemas.ids,
+        "required": true // needed to disable "none" option
+      },
+      "options": {
+          "type": "select",
+          "optionLabels": schemas.names,
+          "form": {
+              "buttons": {
+                  "view": {
+                      "label": "Customize!",
+                      "click": function() {
+                        let params = new URLSearchParams(location.search);
+                        let identifier = params.get('identifier');
+                        window.location.href = window.location.pathname + '?identifier='+ identifier + '&schema=' + this.getValue();
+                      }
+                  }
+              }
+          }
+      }
+    });
   });
 }
 
