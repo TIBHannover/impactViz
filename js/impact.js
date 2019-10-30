@@ -157,7 +157,7 @@ function displayEntityByIdentifier(entity, identifier){
           // display title of the work
           $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
 
-          // display detailed views (paperbuzz data with paperbuzzviz)
+          // display detailed views for the concepts (paperbuzz data with paperbuzzviz)
           displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['scientific-impact'], 'scientific-impact'), scientificimpactviz);
           displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['societal-impact'], 'societal-impact'), societalimpactviz);
           displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['community'], 'community'), communityviz);
@@ -175,10 +175,10 @@ function displayEntityByIdentifier(entity, identifier){
         getIndicators(customize[schemaId]["indicators"], identifier, function(results){
 
         // display a visualisation for each concept at overview
-        $.each(schema.concepts, function(concept){
-            displayImpactByConcept(results, concept, schema['visualisation'][concept]);
+          $.each(schema.concepts, function(concept){
+              displayImpactByConcept(results, concept, schema['visualisation'][concept]);
+            });
           });
-        });
 
       });
 
@@ -218,6 +218,7 @@ function displaySearchForm(identifier){
     "data": identifier,
     "options": {
       "label": "Identifier",
+      "helper": "Find out about the impact of your research. Enter an identifier like an DOI or select an example below.",
       "form": {
         "buttons": {
           "view": {
@@ -361,12 +362,12 @@ function convertPaperbuzzData(json, sources, concept = ""){
   for(var object of data.altmetrics_sources){
     var toss = true;
 
+    // store data in results array
     for(var source of sources){
       if(object.source_id == source) toss = false;
       if(concept) results[concept][object.source_id] = object.events_count;
     }
-    if(toss){ delete data.altmetrics_sources[i];}
-
+    if(toss) delete data.altmetrics_sources[i];
     i++;
   }
 

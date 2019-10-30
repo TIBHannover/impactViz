@@ -9,7 +9,7 @@
     "openness"
   ],
   "visualisation": {
-    "scientific-impact": "horizontalBar",
+    "scientific-impact": "doughnut",
     "societal-impact": "doughnut",
     "community": "polarArea",
     "openness": "doughnut"
