@@ -4,3 +4,6 @@
 [submodule "indicators"]
 	path = indicators
 	url = https://github.com/lilients/registry.git
+[submodule "customize"]
+	path = customize
+	url = https://github.com/lilients/registry.git

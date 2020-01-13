@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Visualize your impact</title>
+		<title></title>
 				<!-- jquery -->
 				<script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
 				<!-- bootstrap -->
@@ -28,19 +28,7 @@
 	<body>
 
 		<!-- header -->
-	  <div class="header">
-	    <div class="container">
-	      <a href="./">
-					<img id="logo" src="img/logo.png" width="60px">
-					<h1>Visualize your impact</h1>
-	      </a>
-				<!-- Navigation -->
-				<ul class="list-inline" >
-					<li><a href="./">Home</a></li>
-					<li><a href="indicators">About</a></li>
-				</ul>
-	    </div>
-	  </div>
+	  <div id="header" class="header"></div>
 
 		<!-- main content of the page -->
 		<div class="container">
@@ -56,6 +44,9 @@
 					<li><a href="index.html?identifier=10.1126/sciadv.1700782"> example 5</a></li> <!-- Production, use, and fate of all plastics ever made -->
 				</ul>
 			</div>
+
+			<!-- customize -->
+			<div class="section" id="customize"></div>
 
 			<!-- results section -->
 			<div class="section" id="result">
@@ -76,13 +67,35 @@
 					<!-- overview -->
 					<div class="section concept" id="overview">
 						<div class="row">
-							<div class="col-lg-6">
-								<canvas id="chartjs" width="30%"></canvas>
+							<div class="col-lg-3">
+
+								<div class="section">
+									<h4>Scientific Impact</h4>
+									<canvas id="scientific-impact-overview" width="30%"></canvas>
 								</div>
-									<div class="col-lg-6">
-										<div id="referencedby"></div>
-										<div id="overviewviz"></div>
-									</div>
+							</div>
+
+							<div class="col-lg-3">
+								<div class="section">
+									<h4>Societal Impact</h4>
+									<canvas id="societal-impact-overview" width="30%"></canvas>
+								</div>
+							</div>
+
+							<div class="col-lg-3">
+								<div class="section">
+									<h4>Community</h4>
+									<canvas id="community-overview" width="30%"></canvas>
+								</div>
+							</div>
+
+							<div class="col-lg-3">
+								<div class="section">
+									<h4>Openness</h4>
+									<canvas id="openness-overview" width="30%"></canvas>
+								</div>
+
+							</div>
 						</div>
 					</div>
 
@@ -91,6 +104,8 @@
 							<div class="alert alert-info">
 								<strong>Definition Scientific impact:</strong> The impact that a work has within the scientific community; is mostly based on citation-based indicators (e.g. publication impact as measured through citations or the number of publications (adopted from Neylon 2017).
 							</div>
+							<div id="scientific-impact-results"></div>
+							<div id="scientificimpactoverviewviz"></div>
 							<div id="scientificimpactviz"></div>
 					</div>
 
@@ -99,6 +114,8 @@
 						<div class="alert alert-info">
 							<strong>Definition Societal impact:</strong> The impact that a work has within society. Recognition from societal groups or for societal activities; measurable impact (e.g via patents, citations in policy documents, mentions in social media, press).
 						</div>
+						<div id="societal-impact-results"></div>
+						<div id="societalimpactoverviewviz"></div>
 						<div id="societalimpactviz"></div>
 					</div>
 
@@ -107,6 +124,8 @@
 						<div class="alert alert-info">
 							<strong>Definition Community:</strong> Involvement in the scientific community (e.g. participation in conferences, peer review and editorial activities, and learned societies)
 						</div>
+						<div id="community-results"></div>
+						<div id="communityoverviewviz"></div>
 						<div id="communityviz"></div>
 					</div>
 
@@ -115,6 +134,8 @@
 						<div class="alert alert-info">
 							<strong>Definition Openness:</strong> Compliance of a person or work to Open Science Standards (e.g. FAIR research data (Findable, Accessible, Interoperable und Reusable), social openness (readability etc.).
 						</div>
+						<div id="openness-results"></div>
+						<div id="opennessoverviewviz"></div>
 						<div id="opennessviz">
 					</div>
 
@@ -122,16 +143,9 @@
 		</div>
 
 		<!-- footer -->
-		<div class="container">
-			<div class="footer">
-				<ul class="list-inline">
-					 <li><a href="mailto:rosi.project(at)tib.eu">Contact</a></li>
-					 <li><li><a href="https://www.tib.eu/en/service/data-protection/">Data protection</a></li>
-					 <li><a href="https://labs.tib.eu/info/en/imprint/">Imprint</a></li>
-					 <li><a href="https://github.com/TIBHannover/rosi-prototype">Code (GitHub)</a></li>
-				 </ul>
-			</div>
-		</div>
+		<div id="footer" class="footer"></div>
+
+		<script type="text/javascript" src="js/basic.js"></script>
 
 	</body>
 </html>

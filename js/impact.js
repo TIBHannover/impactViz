@@ -1,14 +1,16 @@
 $(document).ready(function() {
 
-  // get identifier from url
+  // get variables from url
   let params = new URLSearchParams(location.search);
   let identifier = params.get('identifier');
 
-  // display form with alpaca.js
-  displayForm(identifier, "impact.php");
+  // display search form with alpaca.js
+  displaySearchForm(identifier);
 
+  // do something with the identifier
   if(identifier != null){
 
+    // display result
     $('#result').css('display', 'block');
 
     // check the type of the identifier
@@ -16,20 +18,28 @@ $(document).ready(function() {
 
     if (identifierType){
 
-      // display work info if it is a doi and person info for an orcid
+      // result object
+      results = new Object();
+      results['scientific-impact'] = new Object();
+      results['societal-impact'] = new Object();
+      results['community'] = new Object();
+      results['openness'] = new Object();
+
+      var type;
+
+      // handle entity types
       switch (identifierType) {
-
         case "doi":
-          displayWork(identifier);
+          type = "work";
           break;
-
         case "orcid":
-          displayPerson(identifier);
-          break;
-
-        default:
+          type = "person";
           break;
       }
+
+      // get and display all data for this identifier
+      displayEntityByIdentifier(type, identifier);
+
     }else{
       $('#result').text('Nope, try again.');
     }
@@ -38,62 +48,141 @@ $(document).ready(function() {
 
 
 /*
-* display data for the entity type person
-* get data from impactstory and display results with ?
+* get the data of this indicator for the entity defined by identifier
 *
+* @param indicatorId
 * @param identifier
 */
-function displayPerson(identifier){
+async function callInterface(indicator, identifier, callback){
 
-  $('#loading').text('Nice, an ORCID! Wait a second (or more) for the results ...');
+    // call interface to get data for this identifier
+    $.getJSON(indicator.interface + identifier, function(json){
 
-  $.getJSON('./schemas/person.json', function(config){
+      // find the dataset we want
+      $.each(indicator['key'], function(index, element){
+        if(json) json = json[element];
+      });
 
-    d3.json(config['api'] + identifier, function(json){
+      // write data to html
+      $('#'+indicator['concept']+"-results").append(
+        '<div class="paperbuzz-source-row paperbuzz-compact" style="width: 400px"><div class="paperbuzz-source-heading">'+indicator['name']+': '+json+'</div></div>');
 
-      console.log(json);
-
-      // remove loading info and display title
-      $("#loading").remove();
-      $('#title').text(json._full_name);
-
-        displayOverview(json, config['overview']);
-
+      callback(json);
     });
-
-  });
-
 }
 
 
 /*
-* display data for the entity type work
+* get indicator by id
+*
+* @param indicatorId
+*/
+function getIndicatorById(indicatorId, callback){
+
+  // read metadata of this indicator from json
+  $.getJSON('./indicators/data/data.json', function(indicators){
+
+    $.each(indicators, function(index, indicator){
+
+      if(indicatorId == indicator['id']){
+
+        callback(indicator);
+
+      }
+    });
+  });
+}
+
+
+/*
+* get indicators for the entity defined by identifer
+*
+* @param indicatorIds
+* @param identifier
+* @returns indicators
+*/
+function getIndicators(indicatorIds, identifier, callback){
+
+  // get single indicators
+  $.each(indicatorIds, function(index, indicatorId){
+
+    // get metadata of this indicator
+    getIndicatorById(indicatorId, function(indicator){
+
+      // call api
+      callInterface(indicator, identifier, function(value){
+
+        // store in array
+        results[indicator.concept][indicator.name] = value;
+
+        callback(results);
+
+      });
+    });
+  });
+}
+
+/*
+* display data for a entity type
 * get data from paperbuzz and display results with paperbuzzviz and chartjs
 *
+* @param entity
 * @param identifier
 */
-function displayWork(identifier){
+function displayEntityByIdentifier(entity, identifier){
 
-  $('#loading').text('Ah yes, this seems to be a DOI. Wait a second (or more) for the results ...');
+  // loading message
+  $('#loading').text('Ah yes, this seems to be a '+entity+'. Please be patient while we are collecting the data. This may take a while.');
 
-  $.getJSON('./schemas/work.json', function(config){
+  // get schema for this entity type
+  $.getJSON('./entities/'+entity+'.json', function(schema){
 
     // get data from paperbuzz
-    d3.json(config['api'] + identifier, function(json){
+    $.getJSON(schema['api'] + identifier, function(json){
 
-      // remove loading info and display title
+      // remove loading info
       $('#loading').remove();
-      $('#title').attr('href', 'http://dx.doi.org/' + json.doi).text(json.metadata.title);
+      display('overview'); // css stuff
 
-      // get info about referenced by count directly from json
-      $('#referencedby').text('The publication has been referenced '+json['metadata']['is-referenced-by-count'] + ' times.');
+      // display dropdown
+      displayCustomizeForm();
 
-      // display overview and detailed views
-      displayOverview(json, config['overview']);
-      displayPaperbuzzviz(convertForConcept(json, config['concepts']['scientific-impact']), scientificimpactviz);
-      displayPaperbuzzviz(convertForConcept(json, config['concepts']['societal-impact']), societalimpactviz);
-      displayPaperbuzzviz(convertForConcept(json, config['concepts']['community']), communityviz);
-      displayOpenness(json);
+      // handle entities differently
+      switch(entity){
+
+        case 'person':
+          $('#title').text(json._full_name);
+          break;
+
+        case 'work':
+          // display title of the work
+          $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
+
+          // display detailed views for the concepts (paperbuzz data with paperbuzzviz)
+          displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['scientific-impact']['sources'], 'scientific-impact'), scientificimpactviz);
+          displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['societal-impact']['sources'], 'societal-impact'), societalimpactviz);
+          displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['community']['sources'], 'community'), communityviz);
+
+          break;
+      }
+
+      // read schema from url (use entity name as default if not existing)
+      let params = new URLSearchParams(location.search);
+      let schemaId = params.get('schema') || "0";
+
+      $.getJSON('./customize/data/data.json', function(customize){
+
+        // get the indicators for this entity by identifier
+        getIndicators(customize[schemaId]["indicators"], identifier, function(results){
+
+          // display a visualisation for each concept at overview
+          $.each(schema.concepts, function(concept){
+              displayImpactByConcept(results, concept, schema['concepts'][concept]['visualisation'], schema['concepts'][concept]['overview']);
+            });
+          });
+
+      });
+
     });
   });
 }
@@ -124,38 +213,117 @@ function getIdentifierType(identifier){
 * @param identifier
 * @param action
 */
-function displayForm(identifier, action){
-
-  if(identifier != null){
-    action += "?identifier="+identifier;
-  }
+function displaySearchForm(identifier){
 
   $("#form").alpaca({
-    "data": {
-      "identifier": identifier
-    },
-    "schema": {
-        "type":"object",
-        "properties": {
-            "identifier": {
-                "type":"string",
-                "title":"Identifier"
-            }
-        }
-    },
+    "data": identifier,
     "options": {
-        "form":{
-            "attributes":{
-                "action": action,
-                "method":"post"
-            },
-            "buttons":{
-                "submit":{
-                  "title": "Visualize!"
-                }
+      "label": "Identifier",
+      "helper": "Find out about the impact of your research. Enter an identifier like an DOI or select an example below.",
+      "form": {
+        "buttons": {
+          "view": {
+            "label": "Visualize!",
+            "click": function() {
+             window.location.href = window.location.pathname + '?identifier=' + this.getValue();
             }
+          }
         }
       }
+    }
+  });
+}
+
+
+/**
+* display customize form
+* read available schema from json file
+*/
+function displayCustomizeForm(){
+
+  $.getJSON('./customize/data/data.json', function(customize){
+
+    // store ids and names of schemas
+    var schemas = {};
+    schemas.ids = [];
+    schemas.names = [];
+
+    $.each(customize, function(index, element){
+      schemas.ids.push(element.id);
+      schemas.names.push(element.name);
+    });
+
+    // get schema from url or use default 0
+    let params = new URLSearchParams(location.search);
+    let schema = params.get('schema') || "0";
+
+    // create dropdown with available schema
+    $("#customize").alpaca({
+      "data": [schema],
+      "schema": {
+        "enum": schemas.ids,
+        "required": true // needed to disable "none" option
+      },
+      "options": {
+          "type": "select",
+          "optionLabels": schemas.names,
+          "form": {
+              "buttons": {
+                  "view": {
+                      "label": "Customize!",
+                      "click": function() {
+                        let params = new URLSearchParams(location.search);
+                        let identifier = params.get('identifier');
+                        window.location.href = window.location.pathname + '?identifier='+ identifier + '&schema=' + this.getValue();
+                      }
+                  }
+              }
+          }
+      }
+    });
+  });
+}
+
+
+/*
+* display overview for a concept with chartjs
+*
+* @param data
+* @param concept
+*/
+function displayImpactByConcept(data, concept, visualisation = 'pie', sources){
+
+  var displayData = [];
+  var labels = [];
+  var label = "";
+
+  // put data for this concept to the display data
+  $.each(sources, function(index, label){
+    displayData.push(+data[concept][label]);  // boolean to 0 / 1 with +
+    labels.push(label);
+  });
+
+  // store data for chart
+  var datasets = {
+    datasets: [{
+        data: displayData,
+        backgroundColor: ['rgba(247,70,74,0.8)']
+    }],
+    labels: labels
+  };
+
+  // hide legend
+  var options = {
+    legend: {
+        display: false
+    }
+  }
+
+  // create chart
+  chart = new Chart($('#'+concept+'-overview'), {
+    type: visualisation,
+    data: datasets,
+    options: options
   });
 }
 
@@ -166,7 +334,7 @@ function displayForm(identifier, action){
 * @param json
 * @param sources
 */
-function convertForConcept(json, sources){
+function convertPaperbuzzData(json, sources, concept = ""){
 
   var data = JSON.parse(JSON.stringify(json));
   var i = 0; // index
@@ -174,59 +342,16 @@ function convertForConcept(json, sources){
   for(var object of data.altmetrics_sources){
     var toss = true;
 
+    // store data in results array
     for(var source of sources){
       if(object.source_id == source) toss = false;
+      if(concept) results[concept][object.source_id] = object.events_count;
     }
-    if(toss){ delete data.altmetrics_sources[i];}
-
+    if(toss) delete data.altmetrics_sources[i];
     i++;
   }
 
   return data;
-}
-
-
-/*
-* display overview with chartjs
-*
-* @param data
-*/
-function displayOverview(data, concepts){
-
-  display('overview'); // css stuff
-
-  displayPaperbuzzviz(data, overviewviz, true);
-
-  // create json structure for chartjs data
-  var displayData = {}; datasets = []; labels = []; events = [];
-
-  // get data from each source and convert data according to json structure needed for the chart js
-  concepts.forEach(function(concept) {
-    events.push(Math.floor((Math.random() * 10) + 5)); // random number TODO: get real data
-    labels.push(concept);
-  });
-
-  datasets.push({data: events});
-  displayData.datasets = datasets;
-  displayData.labels = labels;
-
-  // this creates the chartjs chart
-  var myChart = new Chart($('#chartjs'), {
-    data: displayData,
-    type: 'polarArea'
-  });
-}
-
-/*
-* display data for the concept openness
-*
-* @param json
-*/
-function displayOpenness(json){
-
-  if(json.open_access.is_oa){
-    $("#opennessviz").append('<img src="img/open.svg">');
-  }
 }
 
 
@@ -242,10 +367,10 @@ function displayPaperbuzzviz(data, vizDiv, showMini = false){
         minItemsToShowGraph: {
             minEventsForYearly: 1,
             minEventsForMonthly: 1,
-            minEventsForDaily: 1,
+            minEventsForDaily: 5,
             minYearsForYearly: 1,
-            minMonthsForMonthly: 1,
-            minDaysForDaily: 1 //first 30 days only
+            minMonthsForMonthly: 5,
+            minDaysForDaily: 5 //first 30 days only
             },
         graphheight: 200,
         graphwidth:  500,
