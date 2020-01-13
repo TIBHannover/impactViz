@@ -1,6 +1,5 @@
 {
   "api": "https://profiles.impactstory.org/api/person/",
-  "overview": ["Scientific impact", "Societal impact", "Community", "Openness"],
   "concepts": {
     "scientific-impact":  ["base"],
     "societal-impact":  ["wikipedia", "twitter", "mendeley"],

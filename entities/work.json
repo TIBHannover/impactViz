@@ -1,40 +1,52 @@
 {
-  "indicators":[0,1,2,3,4,5],
   "name": "Publication",
   "api": "https://api.paperbuzz.org/v0/doi/",
-  "overview": [
-    "scientific-impact",
-    "societal-impact",
-    "community",
-    "openness"
-  ],
-  "visualisation": {
-    "scientific-impact": "doughnut",
-    "societal-impact": "doughnut",
-    "community": "polarArea",
-    "openness": "doughnut"
-  },
   "concepts": {
-    "scientific-impact": [
-      "f1000",
-      "crossref",
-      "datacite"
-    ],
-    "societal-impact": [
-      "cambia-lens",
-      "wikipedia",
-      "twitter",
-      "wordpressdotcom",
-      "newsfeed",
-      "web",
-      "reddit"
-    ],
-    "community": [
-      "hypothesis",
-      "stackexchange"
-    ],
-    "openness": [
-      "unpaywall"
-    ]
+    "scientific-impact": {
+      "sources": [
+        "f1000",
+        "crossref",
+        "datacite"
+      ],
+      "overview": [
+        "Citations (COCI)",
+        "Citations (Paperbuzz)"
+      ],
+      "visualisation": "doughnut"
+      },
+    "societal-impact": {
+      "sources": [
+        "cambia-lens",
+        "wikipedia",
+        "twitter",
+        "wordpressdotcom",
+        "newsfeed",
+        "web",
+        "reddit"
+      ],
+      "overview": [
+        "wikipedia"
+      ],
+      "visualisation": "doughnut"
+    },
+    "community": {
+      "sources": [
+        "hypothesis",
+        "stackexchange"
+      ],
+      "overview": [
+        "stackexchange"
+      ],
+      "visualisation": "polarArea"
+      },
+    "openness": {
+      "sources": [
+        "unpaywall"
+      ],
+      "overview": [
+        "Open Access"
+      ],
+      "visualisation": "doughnut"
+      }
   }
 }

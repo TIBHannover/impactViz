@@ -25,20 +25,21 @@ $(document).ready(function() {
       results['community'] = new Object();
       results['openness'] = new Object();
 
+      var type;
+
       // handle entity types
       switch (identifierType) {
-
         case "doi":
-          displayEntityByIdentifier("work", identifier);
+          type = "work";
           break;
-
         case "orcid":
-          displayEntityByIdentifier("person", identifier);
-          break;
-
-        default:
+          type = "person";
           break;
       }
+
+      // get and display all data for this identifier
+      displayEntityByIdentifier(type, identifier);
+
     }else{
       $('#result').text('Nope, try again.');
     }
@@ -158,9 +159,9 @@ function displayEntityByIdentifier(entity, identifier){
           $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
 
           // display detailed views for the concepts (paperbuzz data with paperbuzzviz)
-          displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['scientific-impact'], 'scientific-impact'), scientificimpactviz);
-          displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['societal-impact'], 'societal-impact'), societalimpactviz);
-          displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['community'], 'community'), communityviz);
+          displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['scientific-impact']['sources'], 'scientific-impact'), scientificimpactviz);
+          displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['societal-impact']['sources'], 'societal-impact'), societalimpactviz);
+          displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['community']['sources'], 'community'), communityviz);
 
           break;
       }
@@ -174,9 +175,9 @@ function displayEntityByIdentifier(entity, identifier){
         // get the indicators for this entity by identifier
         getIndicators(customize[schemaId]["indicators"], identifier, function(results){
 
-        // display a visualisation for each concept at overview
+          // display a visualisation for each concept at overview
           $.each(schema.concepts, function(concept){
-              displayImpactByConcept(results, concept, schema['visualisation'][concept]);
+              displayImpactByConcept(results, concept, schema['concepts'][concept]['visualisation'], schema['concepts'][concept]['overview']);
             });
           });
 
@@ -290,61 +291,40 @@ function displayCustomizeForm(){
 * @param data
 * @param concept
 */
-function displayImpactByConcept(data, concept, visualisation = 'pie'){
+function displayImpactByConcept(data, concept, visualisation = 'pie', sources){
 
   var displayData = [];
   var labels = [];
   var label = "";
 
-  // TODO: read from config
-  switch (concept) {
-    case 'scientific-impact':
-      label = 'Citations (COCI)';
-      displayData.push(+data[concept][label]);
-      labels.push(label);
-      label = 'Citations (Paperbuzz)';
-      break;
-    case 'societal-impact':
-      label = 'twitter';
-      displayData.push(+data[concept][label]);
-      labels.push(label);
-      label = 'wikipedia';
-      break;
-    case 'community':
-      label = 'stackexchange';
-      break;
-    case 'openness':
-      label = 'Open Access';
-      break;
-    default:
-      label = "";
-    }
-
-    displayData.push(+data[concept][label]); // boolean to 0 / 1 with +
+  // put data for this concept to the display data
+  $.each(sources, function(index, label){
+    displayData.push(+data[concept][label]);  // boolean to 0 / 1 with +
     labels.push(label);
+  });
 
-    // store data for chart
-    var datasets = {
-      datasets: [{
-          data: displayData,
-          backgroundColor: ['rgba(247,70,74,0.8)']
-      }],
-      labels: labels
-    };
+  // store data for chart
+  var datasets = {
+    datasets: [{
+        data: displayData,
+        backgroundColor: ['rgba(247,70,74,0.8)']
+    }],
+    labels: labels
+  };
 
-    // hide legend
-    var options = {
-      legend: {
-          display: false
-      }
+  // hide legend
+  var options = {
+    legend: {
+        display: false
     }
+  }
 
-    // create chart
-    chart = new Chart($('#'+concept+'-overview'), {
-      type: visualisation,
-      data: datasets,
-      options: options
-    });
+  // create chart
+  chart = new Chart($('#'+concept+'-overview'), {
+    type: visualisation,
+    data: datasets,
+    options: options
+  });
 }
 
 
