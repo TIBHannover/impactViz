@@ -1,12 +1,14 @@
 /* body elements */
 
 .container {
-  margin: auto;
+/*  margin: auto;*/
   position: relative;
+  padding-left: 0;
 }
 
 .section{
-  padding: 10px;
+  padding-top: 10px;
+  padding-bottom: 20px;
 }
 
 #result, .concept {
@@ -31,7 +33,6 @@
 /* header */
 
 .header {
-  padding-left: 10px;
   padding-top: 25px;
   padding-bottom: 10px;
   background-color: #4b4b4b;
