@@ -18,7 +18,7 @@ $(document).ready(function() {
 
     if (identifierType){
 
-      // result object
+      // result object to store the retrieved indicators for each concept
       results = new Object();
       results['scientific-impact'] = new Object();
       results['societal-impact'] = new Object();
@@ -45,31 +45,6 @@ $(document).ready(function() {
     }
   }
 });
-
-
-/*
-* get the data of this indicator for the entity defined by identifier
-*
-* @param indicatorId
-* @param identifier
-*/
-async function callInterface(indicator, identifier, callback){
-
-    // call interface to get data for this identifier
-    $.getJSON(indicator.interface + identifier, function(json){
-
-      // find the dataset we want
-      $.each(indicator['key'], function(index, element){
-        if(json) json = json[element];
-      });
-
-      // write data to html
-      $('#'+indicator['concept']+"-results").append(
-        '<div class="paperbuzz-source-row paperbuzz-compact" style="width: 400px"><div class="paperbuzz-source-heading">'+indicator['name']+': '+json+'</div></div>');
-
-      callback(json);
-    });
-}
 
 
 /*
@@ -115,6 +90,9 @@ function getIndicators(indicatorIds, identifier, callback){
         // store in array
         results[indicator.concept][indicator.name] = value;
 
+        // write data to html
+        writeData(indicator, value);
+
         callback(results);
 
       });
@@ -122,8 +100,41 @@ function getIndicators(indicatorIds, identifier, callback){
   });
 }
 
+
 /*
-* display data for a entity type
+* get the data of this indicator for the entity defined by identifier
+*
+* @param indicatorId
+* @param identifier
+*/
+async function callInterface(indicator, identifier, callback){
+
+    // call interface to get data for this identifier
+    $.getJSON(indicator.interface + identifier, function(json){
+
+      // find the dataset we want
+      $.each(indicator['key'], function(index, element){
+        if(json) json = json[element];
+      });
+
+      callback(json);
+    });
+}
+
+
+/*
+* write data to html
+*/
+function writeData(indicator, json){
+  // write data to html
+  $('#'+indicator['concept']+"-results").append(
+    '<div class="paperbuzz-source-row paperbuzz-compact" style="width: 400px"><div class="paperbuzz-source-heading">'+indicator['name']+': '+json+'</div></div>');
+
+}
+
+
+/*
+* display data for an entity type
 * get data from paperbuzz and display results with paperbuzzviz and chartjs
 *
 * @param entity
@@ -155,6 +166,7 @@ function displayEntityByIdentifier(entity, identifier){
           break;
 
         case 'work':
+
           // display title of the work
           $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
 
@@ -177,9 +189,11 @@ function displayEntityByIdentifier(entity, identifier){
 
           // display a visualisation for each concept at overview
           $.each(schema.concepts, function(concept){
-              displayImpactByConcept(results, concept, schema['concepts'][concept]['visualisation'], schema['concepts'][concept]['overview']);
-            });
+
+            displayImpactByConcept(results, concept, schema['concepts'][concept]['visualisation'], schema['concepts'][concept]['overview']);
+
           });
+        });
 
       });
 
