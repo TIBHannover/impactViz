@@ -123,17 +123,6 @@ async function callInterface(indicator, identifier, callback){
 
 
 /*
-* write data to html
-*/
-function writeData(indicator, json){
-  // write data to html
-  $('#'+indicator['concept']+"-results").append(
-    '<div class="paperbuzz-source-row paperbuzz-compact" style="width: 400px"><div class="paperbuzz-source-heading">'+indicator['name']+': '+json+'</div></div>');
-
-}
-
-
-/*
 * display data for an entity type
 * get data from paperbuzz and display results with paperbuzzviz and chartjs
 *
@@ -170,15 +159,20 @@ function displayEntityByIdentifier(entity, identifier){
           // display title of the work
           $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
 
-          // display detailed views for the concepts (paperbuzz data with paperbuzzviz)
-          displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['scientific-impact']['sources'], 'scientific-impact'), scientificimpactviz);
-          displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['societal-impact']['sources'], 'societal-impact'), societalimpactviz);
-          displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts']['community']['sources'], 'community'), communityviz);
+          var concepts = ['scientific-impact', 'societal-impact', 'community'];
+
+          // display overview and detailed views for the concepts (paperbuzz data with paperbuzzviz)
+          $.each(concepts, function(index, concept){
+
+             displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][concept]['sources'], concept), '#'+concept+'-overview', true);
+             displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][concept]['sources'], concept), '#'+concept+'-results');
+
+          });
 
           break;
       }
 
-      // read schema from url (use entity name as default if not existing)
+      // read customize schema from url
       let params = new URLSearchParams(location.search);
       let schemaId = params.get('schema') || "0";
 
@@ -187,12 +181,12 @@ function displayEntityByIdentifier(entity, identifier){
         // get the indicators for this entity by identifier
         getIndicators(customize[schemaId]["indicators"], identifier, function(results){
 
-          // display a visualisation for each concept at overview
-          $.each(schema.concepts, function(concept){
+          // display data for each concept at overview
+      /*    $.each(schema.concepts, function(concept){
+              $.each(results[concept], function(key, value){
 
-            displayImpactByConcept(results, concept, schema['concepts'][concept]['visualisation'], schema['concepts'][concept]['overview']);
-
-          });
+            });
+          }); */
         });
 
       });
@@ -233,7 +227,7 @@ function displaySearchForm(identifier){
     "data": identifier,
     "options": {
       "label": "Identifier",
-      "helper": "Find out about the impact of your research. Enter an identifier like an DOI or select an example below.",
+      "helper": "Find out about the impact of your research. Enter an identifier (currently only DOIs are recognised) or select an example below.",
       "form": {
         "buttons": {
           "view": {
@@ -300,45 +294,14 @@ function displayCustomizeForm(){
 
 
 /*
-* display overview for a concept with chartjs
-*
-* @param data
-* @param concept
+* write data to html
 */
-function displayImpactByConcept(data, concept, visualisation = 'pie', sources){
+function writeData(indicator, json){
 
-  var displayData = [];
-  var labels = [];
-  var label = "";
-
-  // put data for this concept to the display data
-  $.each(sources, function(index, label){
-    displayData.push(+data[concept][label]);  // boolean to 0 / 1 with +
-    labels.push(label);
-  });
-
-  // store data for chart
-  var datasets = {
-    datasets: [{
-        data: displayData,
-        backgroundColor: ['rgba(247,70,74,0.8)']
-    }],
-    labels: labels
-  };
-
-  // hide legend
-  var options = {
-    legend: {
-        display: false
-    }
-  }
-
-  // create chart
-  chart = new Chart($('#'+concept+'-overview'), {
-    type: visualisation,
-    data: datasets,
-    options: options
-  });
+  // write to overview and detailed view
+  $('#'+indicator.concept+'-overview').append('<div class="paperbuzz-source-row paperbuzz-compact" style="width: 200px"><div class="paperbuzz-source-heading">'+indicator.name+'<div class="paperbuzz-count-label" id="paperbuzz-count-datacite">'+json+'</div></div></div>');
+  $('#'+indicator['concept']+'-results').append(
+    '<div class="paperbuzz-source-row paperbuzz-compact" style="width: 300px"><div class="paperbuzz-source-heading">'+indicator.name+'<div class="paperbuzz-count-label" id="paperbuzz-count-datacite">'+json+'</div></div></div>');
 }
 
 
@@ -358,8 +321,16 @@ function convertPaperbuzzData(json, sources, concept = ""){
 
     // store data in results array
     for(var source of sources){
-      if(object.source_id == source) toss = false;
-      if(concept) results[concept][object.source_id] = object.events_count;
+      if(object.source_id == source){
+        toss = false;
+        if(concept){
+          results[concept][object.source_id] = object.events_count;
+
+
+
+      //    $('#'+concept+'-overview').append(object.source_id+': '+object.events_count+'<br>');
+        }
+      }
     }
     if(toss) delete data.altmetrics_sources[i];
     i++;

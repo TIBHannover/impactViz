@@ -38,7 +38,7 @@
 				<div id="form"></div>
 				<ul class="section list-inline">
 					<li><a href="index.html?identifier=10.1371/journal.pone.0165367"> example 1</a></li> <!-- The Effect of Gender in the Publication Patterns in Mathematics -->
-					<li><a href="index.html?identifier=10.3897/rio.4.e31656">example 2</a></li> <!-- Reference implementation for open scientometric indicators (ROSI) -->
+					<li><a href="index.html?identifier=10.1103/PhysRevLett.116.241103">example 2</a></li> <!-- GW151226: Observation of Gravitational Waves from a 22-Solar-Mass Binary Black Hole Coalescence -->
 					<li><a href="index.html?identifier=10.1038/520429a"> example 3</a></li> <!-- Bibliometrics: The Leiden Manifesto for research metrics -->
 					<li><a href="index.html?identifier=10.1073/pnas.1711842115"> example 4</a></li> <!-- The biomass distribution on Earth -->
 					<li><a href="index.html?identifier=10.1126/sciadv.1700782"> example 5</a></li> <!-- Production, use, and fate of all plastics ever made -->
@@ -71,28 +71,28 @@
 
 								<div class="section">
 									<h4>Scientific Impact</h4>
-									<canvas id="scientific-impact-overview" width="30%"></canvas>
+									<div id="scientific-impact-overview"></div>
 								</div>
 							</div>
 
 							<div class="col-lg-3">
 								<div class="section">
 									<h4>Societal Impact</h4>
-									<canvas id="societal-impact-overview" width="30%"></canvas>
+									<div id="societal-impact-overview"></div>
 								</div>
 							</div>
 
 							<div class="col-lg-3">
 								<div class="section">
 									<h4>Community</h4>
-									<canvas id="community-overview" width="30%"></canvas>
+									<div id="community-overview"></div>
 								</div>
 							</div>
 
 							<div class="col-lg-3">
 								<div class="section">
 									<h4>Openness</h4>
-									<canvas id="openness-overview" width="30%"></canvas>
+									<div id="openness-overview"></div>
 								</div>
 
 							</div>
@@ -102,21 +102,17 @@
 					<!-- scientific-impact -->
 					<div class="section concept" id="scientific-impact">
 							<div class="alert alert-info">
-								<strong>Definition Scientific impact:</strong> The impact that a work has within the scientific community; is mostly based on citation-based indicators (e.g. publication impact as measured through citations or the number of publications (adopted from Neylon 2017).
+								<strong>Definition Scientific impact:</strong> The impact that an entity has within the scientific community; is mostly based on citation-based indicators (e.g. publication impact as measured through citations or the number of publications (adopted from Neylon 2017). Citation counts vary and are dependent on the coverage of the data source. Please take this into account when using these numbers for evaluation or similar purposes.
 							</div>
 							<div id="scientific-impact-results"></div>
-							<div id="scientificimpactoverviewviz"></div>
-							<div id="scientificimpactviz"></div>
 					</div>
 
 					<!-- societal-impact -->
 					<div class="section concept" id="societal-impact">
 						<div class="alert alert-info">
-							<strong>Definition Societal impact:</strong> The impact that a work has within society. Recognition from societal groups or for societal activities; measurable impact (e.g via patents, citations in policy documents, mentions in social media, press).
+							<strong>Definition Societal impact:</strong> The impact that an entity has within society. Recognition from societal groups or for societal activities; measurable impact (e.g via patents, citations in policy documents, mentions in social media, press).
 						</div>
 						<div id="societal-impact-results"></div>
-						<div id="societalimpactoverviewviz"></div>
-						<div id="societalimpactviz"></div>
 					</div>
 
 					<!-- community -->
@@ -125,18 +121,14 @@
 							<strong>Definition Community:</strong> Involvement in the scientific community (e.g. participation in conferences, peer review and editorial activities, and learned societies)
 						</div>
 						<div id="community-results"></div>
-						<div id="communityoverviewviz"></div>
-						<div id="communityviz"></div>
 					</div>
 
 					<!-- openness -->
 					<div class="section concept" id="openness">
 						<div class="alert alert-info">
-							<strong>Definition Openness:</strong> Compliance of a person or work to Open Science Standards (e.g. FAIR research data (Findable, Accessible, Interoperable und Reusable), social openness (readability etc.).
+							<strong>Definition Openness:</strong> Compliance to Open Science Standards (e.g. FAIR research data (Findable, Accessible, Interoperable und Reusable), social openness (readability etc.).
 						</div>
 						<div id="openness-results"></div>
-						<div id="opennessoverviewviz"></div>
-						<div id="opennessviz">
 					</div>
 
 			</div>
