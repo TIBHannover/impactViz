@@ -1,10 +1,10 @@
-# ROSI Prototype
+# ROSI Prototype [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 
 [A customizable tool to visualize open scientometric indicators](labs.tib.eu/rosi/prototype/)
 
 The ROSI prototype aims to visualize the impact of publications. Users can retrieve information by entering the persistent identifier of a publication (doi). Data is only retrieved from open data sources, that supply an open interface.
 
-The tool is a work in progress. Feedback is very welcome. Contact us at [rosi.project(at)tib.eu](mailto:rosi.project(at)tib.eu) to get involved.
+Feedback is very welcome. Contact us at [rosi.project(at)tib.eu](mailto:rosi.project(at)tib.eu) to get involved.
 
 ## Features
 
