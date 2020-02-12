@@ -41,7 +41,7 @@ $(document).ready(function() {
       displayEntityByIdentifier(type, identifier);
 
     }else{
-      $('#result').text('Nope, try again.');
+      $('#result').text('Please try again.');
     }
   }
 });
