@@ -1,17 +1,14 @@
-$(document).ready(function() {
+/*
+* ImpactViz
+* see https://github.com/TIBHannover/rosi-prototype
+* Distributed under the MIT License.
+*
+* @brief Visualization of open scientometric indicators
+* @param identifier
+*/
+function ImpactViz(identifier) {
 
-  // get variables from url
-  let params = new URLSearchParams(location.search);
-  let identifier = params.get('identifier');
-
-  // display search form with alpaca.js
-  displaySearchForm(identifier);
-
-  // do something with the identifier
-  if(identifier != null){
-
-    // display result
-    $('#result').css('display', 'block');
+  this.initViz = function() {
 
     // check the type of the identifier
     var identifierType = getIdentifierType(identifier);
@@ -19,6 +16,7 @@ $(document).ready(function() {
     if (identifierType){
 
       // result object to store the retrieved indicators for each concept
+      // TODO: read concepts from config file
       results = new Object();
       results['scientific-impact'] = new Object();
       results['societal-impact'] = new Object();
@@ -39,12 +37,9 @@ $(document).ready(function() {
 
       // get and display all data for this identifier
       displayEntityByIdentifier(type, identifier);
-
-    }else{
-      $('#result').text('Please try again.');
     }
   }
-});
+}
 
 
 /*
@@ -159,13 +154,39 @@ function displayEntityByIdentifier(entity, identifier){
           // display title of the work
           $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
 
-          var concepts = ['scientific-impact', 'societal-impact', 'community'];
+            // TODO: read concepts from config file
+            var concepts = [{
+                    "id": "scientific-impact",
+                    "title": "Scientific Impact",
+                    "icon": "school",
+                },
+                {
+                    "id": "societal-impact",
+                    "title": "Societal Impact",
+                    "icon": "language",
+                },
+                {
+                    "id": "community",
+                    "title": "Community",
+                    "icon": "people",
+                },
+                {
+                    "id": "openness",
+                    "title": "Openness",
+                    "icon": "lock_open",
+                }];
+
+          var row =  $('#overview').append('<div class="row" id ="row">');
 
           // display overview and detailed views for the concepts (paperbuzz data with paperbuzzviz)
           $.each(concepts, function(index, concept){
 
-             displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][concept]['sources'], concept), '#'+concept+'-overview', true);
-             displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][concept]['sources'], concept), '#'+concept+'-results');
+              // create overview html structure
+             $('#row').append('<div class="col-lg-3"><h4><i class="material-icons">'+concept.icon+'</i> '+concept.title+'</h4> <div id="'+concept.id+'-overview"/></div>');
+
+             // write data to overview and detailed view
+             displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][concept.id]['sources'], concept.id), '#'+concept.id+'-overview', true);
+             displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][concept.id]['sources'], concept.id), '#'+concept.id+'-results');
 
           });
 
@@ -203,6 +224,8 @@ function displayEntityByIdentifier(entity, identifier){
 * @return identifierType
 */
 function getIdentifierType(identifier){
+
+  identifier = identifier.replace(/(^\w+:|^)\/\//, '');
 
   const doiPattern = /^10.\d{4,9}\/[-._;()\/:a-zA-Z0-9]+$/gm;
   const orcidPattern = /^\d{4}[-]\d{4}[-]\d{4}[-]\d{4}$/gm;
@@ -325,8 +348,6 @@ function convertPaperbuzzData(json, sources, concept = ""){
         toss = false;
         if(concept){
           results[concept][object.source_id] = object.events_count;
-
-
 
       //    $('#'+concept+'-overview').append(object.source_id+': '+object.events_count+'<br>');
         }
