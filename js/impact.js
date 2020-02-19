@@ -157,23 +157,19 @@ function displayEntityByIdentifier(entity, identifier){
             // TODO: read concepts from config file
             var concepts = [{
                     "id": "scientific-impact",
-                    "title": "Scientific Impact",
-                    "icon": "school",
+                    "title": "Scientific Impact"
                 },
                 {
                     "id": "societal-impact",
-                    "title": "Societal Impact",
-                    "icon": "language",
+                    "title": "Societal Impact"
                 },
                 {
                     "id": "community",
-                    "title": "Community",
-                    "icon": "people",
+                    "title": "Community"
                 },
                 {
                     "id": "openness",
-                    "title": "Openness",
-                    "icon": "lock_open",
+                    "title": "Openness"
                 }];
 
           var row =  $('#overview').append('<div class="row" id ="row">');
@@ -182,7 +178,7 @@ function displayEntityByIdentifier(entity, identifier){
           $.each(concepts, function(index, concept){
 
               // create overview html structure
-             $('#row').append('<div class="col-lg-3"><h4><i class="material-icons">'+concept.icon+'</i> '+concept.title+'</h4> <div id="'+concept.id+'-overview"/></div>');
+             $('#row').append('<div class="col-lg-3"><img width="80px" src="./img/'+concept.id+'.png" id="'+concept.id+'-image"></img><br/><h4>'+concept.title+'</h4>  <div id="'+concept.id+'-overview"/></div>');
 
              // write data to overview and detailed view
              displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][concept.id]['sources'], concept.id), '#'+concept.id+'-overview', true);
@@ -320,6 +316,11 @@ function displayCustomizeForm(){
 * write data to html
 */
 function writeData(indicator, json){
+
+  // display green check if the data is binary and true
+  if(json == true ){
+    json = '<img width="20px" src="./img/check.png"></img>';
+  }
 
   // write to overview and detailed view
   $('#'+indicator.concept+'-overview').append('<div class="paperbuzz-source-row paperbuzz-compact" style="width: 200px"><div class="paperbuzz-source-heading">'+indicator.name+'<div class="paperbuzz-count-label" id="paperbuzz-count-datacite">'+json+'</div></div></div>');
