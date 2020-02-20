@@ -15,14 +15,6 @@ function ImpactViz(identifier) {
 
     if (identifierType){
 
-      // result object to store the retrieved indicators for each concept
-      // TODO: read concepts from config file
-      results = new Object();
-      results['scientific-impact'] = new Object();
-      results['societal-impact'] = new Object();
-      results['community'] = new Object();
-      results['openness'] = new Object();
-
       var type;
 
       // handle entity types
@@ -79,14 +71,14 @@ function getIndicators(indicatorIds, identifier, callback){
     // get metadata of this indicator
     getIndicatorById(indicatorId, function(indicator){
 
-      // call api
+      // call api to get data
       callInterface(indicator, identifier, function(value){
 
         // store in array
         results[indicator.concept][indicator.name] = value;
 
         // write data to html
-        writeData(indicator, value);
+        displayIndicator(indicator.concept, indicator.name, value);
 
         callback(results);
 
@@ -154,35 +146,27 @@ function displayEntityByIdentifier(entity, identifier){
           // display title of the work
           $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
 
-            // TODO: read concepts from config file
-            var concepts = [{
-                    "id": "scientific-impact",
-                    "title": "Scientific Impact"
-                },
-                {
-                    "id": "societal-impact",
-                    "title": "Societal Impact"
-                },
-                {
-                    "id": "community",
-                    "title": "Community"
-                },
-                {
-                    "id": "openness",
-                    "title": "Openness"
-                }];
+          // add div for overview
+          $('#overview').append('<div class="row" id ="row">');
 
-          var row =  $('#overview').append('<div class="row" id ="row">');
+          // get list of concepts from schema file
+          var concepts = [];
+          for (var key in schema['concepts']) concepts.push(key);
 
-          // display overview and detailed views for the concepts (paperbuzz data with paperbuzzviz)
+          // result object to store the retrieved indicators
+          results = {};
+
+          // display overview and detailed views for each concept (paperbuzz data with paperbuzzviz)
           $.each(concepts, function(index, concept){
 
-              // create overview html structure
-             $('#row').append('<div class="col-lg-3"><img width="80px" src="./img/'+concept.id+'.png" id="'+concept.id+'-image"></img><br/><h4>'+concept.title+'</h4>  <div id="'+concept.id+'-overview"/></div>');
+            // create a storage area for each concept in the result object
+            results[concept] = {};
 
-             // write data to overview and detailed view
-             displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][concept.id]['sources'], concept.id), '#'+concept.id+'-overview', true);
-             displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][concept.id]['sources'], concept.id), '#'+concept.id+'-results');
+            // create overview html structure
+            $('#row').append('<div class="col-lg-3"><img width="80px" src="./img/'+concept+'-white.png" id="'+concept+'-image"></img><br/><h4>'+ schema['concepts'][concept]['title']+'</h4><div id="'+concept+'-overview"/></div>');
+
+            // write data to detailed view with paperbuzzviz
+            displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][concept]['sources'], concept), '#'+concept+'-results');
 
           });
 
@@ -198,16 +182,24 @@ function displayEntityByIdentifier(entity, identifier){
         // get the indicators for this entity by identifier
         getIndicators(customize[schemaId]["indicators"], identifier, function(results){
 
-          // display data for each concept at overview
-      /*    $.each(schema.concepts, function(concept){
-              $.each(results[concept], function(key, value){
+          // display data from result array for each concept at overview
+          $.each(schema.concepts, function(concept){
 
+            $.each(results[concept], function(indicatorName, value){
+
+              $.each(schema['concepts'][concept]['overview'], function(key, overview){
+
+                if(indicatorName == overview){
+
+                  // write to overview
+                  displayIndicator(concept, indicatorName, value, true);
+
+                }
+              });
             });
-          }); */
+          });
         });
-
       });
-
     });
   });
 }
@@ -246,7 +238,7 @@ function displaySearchForm(identifier){
     "data": identifier,
     "options": {
       "label": "Identifier",
-      "helper": "Find out about the impact of your research. Enter an identifier (currently only DOIs are recognised) or select an example below.",
+      "helper": "Visualize scientometric indicators: Enter persistent identitifiers (currently Digital Object Identifiers - DOI) or select one of the random examples of publications and research data below.",
       "form": {
         "buttons": {
           "view": {
@@ -315,17 +307,29 @@ function displayCustomizeForm(){
 /*
 * write data to html
 */
-function writeData(indicator, json){
+function displayIndicator(concept, label, data, overview = false){
+
+  // replace concept icon
+  $('#'+concept+'-image').attr('src', './img/'+concept+'.png');
 
   // display green check if the data is binary and true
-  if(json == true ){
-    json = '<img width="20px" src="./img/check.png"></img>';
+  if(data === true){
+    data = '<img width="20px" src="./img/check.png"></img>';
   }
 
-  // write to overview and detailed view
-  $('#'+indicator.concept+'-overview').append('<div class="paperbuzz-source-row paperbuzz-compact" style="width: 200px"><div class="paperbuzz-source-heading">'+indicator.name+'<div class="paperbuzz-count-label" id="paperbuzz-count-datacite">'+json+'</div></div></div>');
-  $('#'+indicator['concept']+'-results').append(
-    '<div class="paperbuzz-source-row paperbuzz-compact" style="width: 300px"><div class="paperbuzz-source-heading">'+indicator.name+'<div class="paperbuzz-count-label" id="paperbuzz-count-datacite">'+json+'</div></div></div>');
+  var id = label.replace(/\s+/g, '');
+  id = id.replace(/[^a-zA-Z 0-9]+/g,'');
+
+  // write to overview
+  if(overview && $('#paperbuzz-count-'+id+'-overview').length == 0){
+    $('#'+concept+'-overview').append('<div class="paperbuzz-source-row paperbuzz-compact" style="width: 200px"><div class="paperbuzz-source-heading">'+label+'<div class="paperbuzz-count-label" id="paperbuzz-count-'+id+'-overview">'+data+'</div></div></div>');
+  }
+
+  if($('#paperbuzz-count-'+id+'').length == 0){
+    // write to detailed view
+    $('#'+concept+'-results').append(
+      '<div class="paperbuzz-source-row paperbuzz-compact" style="width: 300px"><div class="paperbuzz-source-heading">'+label+'<div class="paperbuzz-count-label" id="paperbuzz-count-'+id+'">'+data+'</div></div></div>');
+  }
 }
 
 

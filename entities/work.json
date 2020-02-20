@@ -3,6 +3,7 @@
   "api": "https://api.paperbuzz.org/v0/doi/",
   "concepts": {
     "scientific-impact": {
+      "title": "Scientific Impact",
       "sources": [
         "f1000",
         "crossref",
@@ -15,6 +16,7 @@
       "visualisation": "doughnut"
       },
     "societal-impact": {
+      "title": "Societal Impact",
       "sources": [
         "cambia-lens",
         "wikipedia",
@@ -25,11 +27,13 @@
         "reddit"
       ],
       "overview": [
+        "twitter",
         "wikipedia"
       ],
       "visualisation": "doughnut"
     },
     "community": {
+      "title": "Community",
       "sources": [
         "hypothesis",
         "stackexchange"
@@ -40,6 +44,7 @@
       "visualisation": "polarArea"
       },
     "openness": {
+      "title": "Openness",
       "sources": [
         "unpaywall"
       ],

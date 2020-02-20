@@ -1,7 +1,7 @@
 /* body elements */
 
 .container {
-/*  margin: auto;*/
+  margin: auto;
   position: relative;
   padding-left: 0;
 }
@@ -59,7 +59,7 @@
 }
 
 .container a, .footer a{
-  color: #af1414;
+  color: rgb(23, 55, 94);
 }
 
 /* form */
