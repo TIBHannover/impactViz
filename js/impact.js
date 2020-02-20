@@ -118,8 +118,9 @@ async function callInterface(indicator, identifier, callback){
 */
 function displayEntityByIdentifier(entity, identifier){
 
-  // loading message
-  $('#loading').text('Ah yes, this seems to be a '+entity+'. Please be patient while we are collecting the data. This may take a while.');
+  // loading message (will be removed, once the data is there)
+  $('#impactviz-overview').append('<div id="impactviz-loading">Collecting the data for the entered '+entity+'. Please be patient - this may take a while.</div>');
+  $('#impactviz-loading').append('<img src="./img/loading.gif"></img>');
 
   // get schema for this entity type
   $.getJSON('./entities/'+entity+'.json', function(schema){
@@ -128,11 +129,13 @@ function displayEntityByIdentifier(entity, identifier){
     $.getJSON(schema['api'] + identifier, function(json){
 
       // remove loading info
-      $('#loading').remove();
-      display('overview'); // css stuff
+      $('#impactviz-loading').remove();
+      display('impactviz-overview'); // css stuff
 
       // display dropdown
       displayCustomizeForm();
+
+      $('#impactviz-overview').append('<h3><a id="title"></a></h3><br>');
 
       // handle entities differently
       switch(entity){
@@ -147,26 +150,40 @@ function displayEntityByIdentifier(entity, identifier){
           $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
 
           // add div for overview
-          $('#overview').append('<div class="row" id ="row">');
+          $('#impactviz-overview').append('<div class="section row" id ="impactviz-overview-row">');
 
           // get list of concepts from schema file
-          var concepts = [];
-          for (var key in schema['concepts']) concepts.push(key);
+          var conceptIds = [];
+          for (var key in schema['concepts']) conceptIds.push(key);
 
           // result object to store the retrieved indicators
           results = {};
 
           // display overview and detailed views for each concept (paperbuzz data with paperbuzzviz)
-          $.each(concepts, function(index, concept){
+          $.each(conceptIds, function(index, conceptId){
 
             // create a storage area for each concept in the result object
-            results[concept] = {};
+            results[conceptId] = {};
+
+            concept = schema['concepts'][conceptId];
 
             // create overview html structure
-            $('#row').append('<div class="col-lg-3"><img width="80px" src="./img/'+concept+'-white.png" id="'+concept+'-image"></img><br/><h4>'+ schema['concepts'][concept]['title']+'</h4><div id="'+concept+'-overview"/></div>');
+            $('#impactviz-overview-row').append('<div class="col-lg-3"><a id="'+conceptId+'-link" href="#"><img width="80px" src="./img/'+conceptId+'-white.png" id="'
+            +conceptId+'-image"></img><br/><h4>'
+            +concept.title+'</h4></a><div id="'
+            +conceptId+'-overview"/></div>');
+
+            $('#'+conceptId+'-link').on("click", function(e){
+              display(conceptId);
+            });
+
+            $('#impactviz-details').append('<div class="section concept" id="'+conceptId+'"><div class="alert alert-info"><i class="material-icons">'
+            +schema['concepts'][conceptId]['icon']+'</i>	<strong>'
+            +concept.title
+            +' </strong>'+concept.definition+'</div>	<div id="'+conceptId+'-results"></div></div>');
 
             // write data to detailed view with paperbuzzviz
-            displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][concept]['sources'], concept), '#'+concept+'-results');
+            displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][conceptId]['sources'], conceptId), '#'+conceptId+'-results');
 
           });
 
@@ -276,8 +293,10 @@ function displayCustomizeForm(){
     let params = new URLSearchParams(location.search);
     let schema = params.get('schema') || "0";
 
+    //$("#impactviz").append('<div id="impactviz-customize"></div>');
+
     // create dropdown with available schema
-    $("#customize").alpaca({
+    $("#impactviz-customize").alpaca({
       "data": [schema],
       "schema": {
         "enum": schemas.ids,
@@ -353,8 +372,6 @@ function convertPaperbuzzData(json, sources, concept = ""){
         toss = false;
         if(concept){
           results[concept][object.source_id] = object.events_count;
-
-      //    $('#'+concept+'-overview').append(object.source_id+': '+object.events_count+'<br>');
         }
       }
     }

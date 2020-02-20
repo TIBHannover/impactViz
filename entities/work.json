@@ -4,6 +4,8 @@
   "concepts": {
     "scientific-impact": {
       "title": "Scientific Impact",
+      "definition": "The impact that an entity has within the scientific community; is mostly based on citation-based indicators (e.g. publication impact as measured through citations or the number of publications (adopted from Neylon 2017). Citation counts vary and are dependent on the coverage of the data source. Please take this into account when using these numbers for evaluation or similar purposes.",
+      "icon": "school",
       "sources": [
         "f1000",
         "crossref",
@@ -12,11 +14,12 @@
       "overview": [
         "Citations (COCI)",
         "Citations (Paperbuzz)"
-      ],
-      "visualisation": "doughnut"
+      ]
       },
     "societal-impact": {
       "title": "Societal Impact",
+      "definition": "The impact that an entity has within society. Recognition from societal groups or for societal activities; measurable impact (e.g via patents, citations in policy documents, mentions in social media, press).",
+      "icon": "language",
       "sources": [
         "cambia-lens",
         "wikipedia",
@@ -29,29 +32,30 @@
       "overview": [
         "twitter",
         "wikipedia"
-      ],
-      "visualisation": "doughnut"
+      ]
     },
     "community": {
       "title": "Community",
+      "definition": "Involvement in the scientific community (e.g. participation in conferences, peer review and editorial activities, and learned societies).",
+      "icon": "people",
       "sources": [
         "hypothesis",
         "stackexchange"
       ],
       "overview": [
         "stackexchange"
-      ],
-      "visualisation": "polarArea"
+      ]
       },
     "openness": {
       "title": "Openness",
+      "definition": "Compliance to Open Science Standards (e.g. FAIR research data (Findable, Accessible, Interoperable und Reusable), social openness (readability etc.).",
+      "icon": "lock_open",
       "sources": [
         "unpaywall"
       ],
       "overview": [
         "Open Access"
-      ],
-      "visualisation": "doughnut"
+      ]
       }
   }
 }

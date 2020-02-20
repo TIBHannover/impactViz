@@ -6,7 +6,7 @@
   padding-left: 0;
 }
 
-.section{
+.section, #impactviz-details, #impactviz-overview{
   padding-top: 10px;
   padding-bottom: 20px;
 }
@@ -25,8 +25,8 @@
   width: 20px;
 }
 
-#customize{
-  width: 30%;
+#impactviz-customize{
+  width: 20%;
   float: right;
 }
 

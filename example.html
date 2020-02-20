@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<!-- jquery -->
+		<script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+		<!-- bootstrap -->
+		<script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+		<link type="text/css" rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+		<!-- alpaca -->
+		<script type="text/javascript" src="node_modules/handlebars/dist/handlebars.js"></script>
+		<script type="text/javascript" src="node_modules/alpaca/dist/alpaca/bootstrap/alpaca.min.js"></script>
+		<link type="text/css" rel="stylesheet" href="node_modules/alpaca/dist/alpaca/bootstrap/alpaca.min.css" />
+		<!-- google icons -->
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<!-- paperbuzzviz and d3js-->
+		<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script> <!-- TODO get via npm or git submodule -->
+		<script type="text/javascript" src="lib/paperbuzzviz/example/d3-tip.js"></script>
+		<script type="text/javascript" src="lib/paperbuzzviz/paperbuzzviz.js"></script>
+		<link rel="stylesheet" type="text/css" href="lib/paperbuzzviz/assets/css/paperbuzzviz.css" />
+		<!-- own scripts -->
+		<script type="text/javascript" src="js/impact.js"></script>
+		<link type="text/css" rel="stylesheet" href="style/style.css">
+  </head>
+  <body>
+
+		<h2>Testing Standalone ROSI</h2>
+
+		<!-- customize -->
+		<div id="impactviz-customize"></div>
+		<!-- overview -->
+		<div id="impactviz-overview"></div>
+		<!-- details -->
+		<div id="impactviz-details"></div>
+
+  </body>
+
+  <script type="text/javascript">
+
+		var identifier = "10.1038/520429a";
+    impact = new ImpactViz(identifier);
+    impact.initViz();
+
+  </script>
+
+</html>
