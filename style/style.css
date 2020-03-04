@@ -95,3 +95,7 @@ label{
 .paperbuzz-bar.alt{
 	fill: none !important;
 }
+
+.paperbuzz-source-row{
+  width: 200px;
+}

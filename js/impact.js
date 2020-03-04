@@ -293,6 +293,7 @@ function displayCustomizeForm(){
     let params = new URLSearchParams(location.search);
     let schema = params.get('schema') || "0";
 
+    // TODO: read customization from settings
     //$("#impactviz").append('<div id="impactviz-customize"></div>');
 
     // create dropdown with available schema
@@ -328,7 +329,7 @@ function displayCustomizeForm(){
 */
 function displayIndicator(concept, label, data, overview = false){
 
-  // replace concept icon
+  // replace concept icon - to signalize that there is data available for this concept
   $('#'+concept+'-image').attr('src', './img/'+concept+'.png');
 
   // display icon if the data is binary
@@ -336,18 +337,19 @@ function displayIndicator(concept, label, data, overview = false){
     data = '<img width="20px" src="./img/'+data+'.png"></img>';
   }
 
+  // remove empty spaces and non numeric values to be able to use the label as an id
   var id = label.replace(/\s+/g, '');
   id = id.replace(/[^a-zA-Z 0-9]+/g,'');
 
   // write to overview
   if(overview && $('#paperbuzz-count-'+id+'-overview').length == 0){
-    $('#'+concept+'-overview').append('<div class="paperbuzz-source-row paperbuzz-compact" style="width: 200px"><div class="paperbuzz-source-heading">'+label+'<div class="paperbuzz-count-label" id="paperbuzz-count-'+id+'-overview">'+data+'</div></div></div>');
+    $('#'+concept+'-overview').append('<div class="paperbuzz-source-row paperbuzz-compact"><div class="paperbuzz-source-heading">'+label+'<div class="paperbuzz-count-label" id="paperbuzz-count-'+id+'-overview">'+data+'</div></div></div>');
   }
 
+  // write to detailed view
   if($('#paperbuzz-count-'+id+'').length == 0){
-    // write to detailed view
     $('#'+concept+'-results').append(
-      '<div class="paperbuzz-source-row paperbuzz-compact" style="width: 300px"><div class="paperbuzz-source-heading">'+label+'<div class="paperbuzz-count-label" id="paperbuzz-count-'+id+'">'+data+'</div></div></div>');
+      '<div class="paperbuzz-source-row paperbuzz-compact"><div class="paperbuzz-source-heading">'+label+'<div class="paperbuzz-count-label" id="paperbuzz-count-'+id+'">'+data+'</div></div></div>');
   }
 }
 
