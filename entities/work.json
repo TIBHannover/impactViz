@@ -7,9 +7,7 @@
       "definition": "The impact that an entity has within the scientific community; is mostly based on citation-based indicators (e.g. publication impact as measured through citations or the number of publications (adopted from Neylon 2017). Citation counts vary and are dependent on the coverage of the data source. Please take this into account when using these numbers for evaluation or similar purposes.",
       "icon": "school",
       "sources": [
-        "f1000",
-        "crossref",
-        "datacite"
+        "f1000"
       ],
       "overview": [
         "Citations (COCI)",
@@ -54,7 +52,8 @@
         "unpaywall"
       ],
       "overview": [
-        "Open Access"
+        "Open Access",
+        "DOAJ"
       ]
       }
   }
