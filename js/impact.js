@@ -230,9 +230,7 @@ function displayEntityByIdentifier(entity, identifier){
 */
 function getIdentifierType(identifier){
 
-  identifier = identifier.replace(/(^\w+:|^)\/\//, '');
-
-  const doiPattern = /^10.\d{4,9}\/[-._;()\/:a-zA-Z0-9]+$/gm;
+  const doiPattern = /10.\d{4,9}\/[-._;()\/:a-zA-Z0-9]+$/gm;
   const orcidPattern = /^\d{4}[-]\d{4}[-]\d{4}[-]\d{4}$/gm;
 
   if (doiPattern.exec(identifier)) {
