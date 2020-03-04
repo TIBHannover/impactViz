@@ -135,7 +135,7 @@ function displayEntityByIdentifier(entity, identifier){
       // display dropdown
       displayCustomizeForm();
 
-      $('#impactviz-overview').append('<h3><a id="title"></a></h3><br>');
+      $('#impactviz-overview').append('<h3><a id="title"></a></h3><br><div>click on a concept to get more information</div><br>');
 
       // handle entities differently
       switch(entity){
