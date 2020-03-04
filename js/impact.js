@@ -135,7 +135,7 @@ function displayEntityByIdentifier(entity, identifier){
       // display dropdown
       displayCustomizeForm();
 
-      $('#impactviz-overview').append('<h3><a id="title"></a></h3><br><div>click on a concept to get more information</div><br>');
+      $('#impactviz-overview').append('<h3><a id="title"></a></h3><p class="help-block"><i class="glyphicon glyphicon-info-sign"></i> Click on a concept to get more information.</p><br>');
 
       // handle entities differently
       switch(entity){
@@ -170,7 +170,7 @@ function displayEntityByIdentifier(entity, identifier){
             // create overview html structure
             $('#impactviz-overview-row').append('<div class="col-lg-3"><a id="'+conceptId+'-link" href="#"><img width="80px" src="./img/'+conceptId+'-white.png" id="'
             +conceptId+'-image"></img><br/><h4>'
-            +concept.title+'</h4></a><div id="'
+            +concept.title+'<i class="material-icons">arrow_drop_down</i></h4></a><div id="'
             +conceptId+'-overview"/></div>');
 
             $('#'+conceptId+'-link').on("click", function(e){
@@ -331,9 +331,9 @@ function displayIndicator(concept, label, data, overview = false){
   // replace concept icon
   $('#'+concept+'-image').attr('src', './img/'+concept+'.png');
 
-  // display green check if the data is binary and true
-  if(data === true){
-    data = '<img width="20px" src="./img/check.png"></img>';
+  // display icon if the data is binary
+  if(data === true || data === false || data === null){
+    data = '<img width="20px" src="./img/'+data+'.png"></img>';
   }
 
   var id = label.replace(/\s+/g, '');
