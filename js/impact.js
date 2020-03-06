@@ -337,6 +337,11 @@ function displayIndicator(concept, label, data, overview = false){
     data = '<img width="20px" src="./img/'+data+'.png"></img>';
   }
 
+  // check, if data is URL and add icon
+  if(validURL(data)){
+    data = '<a href="'+data+'"><i class="material-icons">link</i></a>';
+  }
+
   // remove empty spaces and non numeric values to be able to use the label as an id
   var id = label.replace(/\s+/g, '');
   id = id.replace(/[^a-zA-Z 0-9]+/g,'');
@@ -420,9 +425,14 @@ function displayPaperbuzzviz(data, vizDiv, showMini = false){
 * Helper functions
 */
 
+// check if string is a url
+function validURL(string) {
+  var pattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+  return pattern.test(string);
+}
+
 // display the selected concept and hide all other
 function display(concept){
-
   $('.concept').css('display', 'none');
   $('#'+concept).css('display', 'block');
 }
