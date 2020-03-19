@@ -6,12 +6,120 @@
 * @brief Visualization of open scientometric indicators
 * @param identifier
 */
-function ImpactViz(identifier) {
+function ImpactViz(identifier, options = '') {
 
+  // set default values for options
+  window.customizePath = './schemas/customize.json';
+  window.indicatorsPath = './schemas/indicators.json';
+
+  // read options
+  if (options.customize) window.customizePath = options.customize;
+  if (options.indicators) window.indicatorsPath = options.indicators;
+
+  // get and display all data for this identifier
   this.initViz = function() {
 
-    // get and display all data for this identifier
-    displayEntityByIdentifier(identifier);
+      // check the type of the identifier to get the entity
+      identifier = identifier.replace(/(^\w+:|^)\/\//, '');
+      const doiPattern = /10.\d{4,9}\/[-._;()\/:a-zA-Z0-9]+$/gm;
+      const orcidPattern = /^\d{4}[-]\d{4}[-]\d{4}[-]\d{4}$/gm;
+
+      var entity;
+
+      if (doiPattern.exec(identifier)) {
+        entity = "work";
+      }else if (orcidPattern.exec(identifier)) {
+        entity = "person";
+      }
+
+      // loading message (will be removed, once the data is there)
+      $('#impactviz-overview').append('<div id="impactviz-loading">Collecting the data for the entered '+entity+'. Please be patient - this may take a while.</div>');
+      $('#impactviz-loading').append('<img src="./img/loading.gif"></img>');
+
+      // get schema for this entity type
+      $.getJSON('./entities/'+entity+'.json', function(schema){
+
+        // get data from paperbuzz
+        $.getJSON(schema['api'] + identifier, function(json){
+
+          // remove loading info
+          $('#impactviz-loading').remove();
+          display('impactviz-overview'); // css stuff
+
+          // display dropdown
+          displayCustomizeForm();
+
+          // info block
+          $('#impactviz-overview').append('<h3><a id="title"></a></h3><p class="help-block"><i class="glyphicon glyphicon-info-sign"></i> Click on an icon to get more information.</p><br>');
+
+          // handle entities differently
+          switch(entity){
+
+            case 'person':
+              $('#title').text(json._full_name);
+              break;
+
+            case 'work':
+
+              // display title of the work
+              $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
+
+              // add div for overview
+              $('#impactviz-overview').append('<div class="section row" id ="impactviz-overview-row">');
+
+              // get list of concepts from schema file
+              var conceptIds = [];
+              for (var key in schema['concepts']) conceptIds.push(key);
+
+              // result object to store the retrieved indicators
+              results = {};
+
+              // display overview and detailed views for each concept (paperbuzz data with paperbuzzviz)
+              $.each(conceptIds, function(index, conceptId){
+
+                // create a storage area for this concept in the result object
+                results[conceptId] = {};
+
+                // create the html structure for this concept
+                displayConceptStructure(schema['concepts'][conceptId])
+
+                // write data to detailed view with paperbuzzviz
+                displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][conceptId]['sources'], conceptId), '#'+conceptId+'-results');
+
+              });
+
+              break;
+          }
+
+          // read customize schema from url
+          let params = new URLSearchParams(location.search);
+          let schemaId = params.get('schema') || '0';
+
+          $.getJSON(window.customizePath, function(customize){
+
+            // get the data for this entity by identifier
+            getData(customize[schemaId]['indicators'], identifier, function(results){
+
+              // display data from result array for each concept at overview
+              $.each(schema.concepts, function(concept){
+
+                $.each(results[concept], function(indicatorName, value){
+
+                  $.each(schema['concepts'][concept]['overview'], function(key, overview){
+
+                    if(indicatorName == overview){
+
+                      // write to overview
+                      writeData(concept, indicatorName, value, true);
+
+                    }
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
 
   }
 }
@@ -25,7 +133,7 @@ function ImpactViz(identifier) {
 function getIndicatorById(indicatorId, callback){
 
   // read metadata of this indicator from json
-  $.getJSON('./indicators/data/data.json', function(indicators){
+  $.getJSON(window.indicatorsPath, function(indicators){
 
     $.each(indicators, function(index, indicator){
 
@@ -61,7 +169,7 @@ function getData(indicatorIds, identifier, callback){
         results[indicator.concept][indicator.name] = value;
 
         // write data to html
-        displayIndicator(indicator.concept, indicator.name, value);
+        writeData(indicator.concept, indicator.name, value);
 
         callback(results);
 
@@ -83,124 +191,12 @@ async function callInterface(indicator, identifier, callback){
     $.getJSON(indicator.interface + identifier, function(json){
 
       // find the dataset we want
-      $.each(indicator['key'], function(index, element){
+      $.each(indicator.key, function(index, element){
         if(json) json = json[element];
       });
 
       callback(json);
     });
-}
-
-
-/*
-* display data for an entity type
-* get data from paperbuzz and display results with paperbuzzviz and chartjs
-*
-* @param entity
-* @param identifier
-*/
-function displayEntityByIdentifier(identifier){
-
-  // check the type of the identifier to get the entity
-  var entity;
-  identifier = identifier.replace(/(^\w+:|^)\/\//, '');
-  const doiPattern = /10.\d{4,9}\/[-._;()\/:a-zA-Z0-9]+$/gm;
-  const orcidPattern = /^\d{4}[-]\d{4}[-]\d{4}[-]\d{4}$/gm;
-
-  if (doiPattern.exec(identifier)) {
-    entity = "work";
-  }else if (orcidPattern.exec(identifier)) {
-    entity = "person";
-  }
-
-  // loading message (will be removed, once the data is there)
-  $('#impactviz-overview').append('<div id="impactviz-loading">Collecting the data for the entered '+entity+'. Please be patient - this may take a while.</div>');
-  $('#impactviz-loading').append('<img src="./img/loading.gif"></img>');
-
-  // get schema for this entity type
-  $.getJSON('./entities/'+entity+'.json', function(schema){
-
-    // get data from paperbuzz
-    $.getJSON(schema['api'] + identifier, function(json){
-
-      // remove loading info
-      $('#impactviz-loading').remove();
-      display('impactviz-overview'); // css stuff
-
-      // display dropdown
-      displayCustomizeForm();
-
-      // info block
-      $('#impactviz-overview').append('<h3><a id="title"></a></h3><p class="help-block"><i class="glyphicon glyphicon-info-sign"></i> Click on an icon to get more information.</p><br>');
-
-      // handle entities differently
-      switch(entity){
-
-        case 'person':
-          $('#title').text(json._full_name);
-          break;
-
-        case 'work':
-
-          // display title of the work
-          $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
-
-          // add div for overview
-          $('#impactviz-overview').append('<div class="section row" id ="impactviz-overview-row">');
-
-          // get list of concepts from schema file
-          var conceptIds = [];
-          for (var key in schema['concepts']) conceptIds.push(key);
-
-          // result object to store the retrieved indicators
-          results = {};
-
-          // display overview and detailed views for each concept (paperbuzz data with paperbuzzviz)
-          $.each(conceptIds, function(index, conceptId){
-
-            // create a storage area for this concept in the result object
-            results[conceptId] = {};
-
-            // create the html structure for this concept
-            displayConceptStructure(schema['concepts'][conceptId])
-
-            // write data to detailed view with paperbuzzviz
-            displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][conceptId]['sources'], conceptId), '#'+conceptId+'-results');
-
-          });
-
-          break;
-      }
-
-      // read customize schema from url
-      let params = new URLSearchParams(location.search);
-      let schemaId = params.get('schema') || "0";
-
-      $.getJSON('./customize/data/data.json', function(customize){
-
-        // get the data for this entity by identifier
-        getData(customize[schemaId]["indicators"], identifier, function(results){
-
-          // display data from result array for each concept at overview
-          $.each(schema.concepts, function(concept){
-
-            $.each(results[concept], function(indicatorName, value){
-
-              $.each(schema['concepts'][concept]['overview'], function(key, overview){
-
-                if(indicatorName == overview){
-
-                  // write to overview
-                  displayIndicator(concept, indicatorName, value, true);
-
-                }
-              });
-            });
-          });
-        });
-      });
-    });
-  });
 }
 
 
@@ -263,7 +259,7 @@ function displayConceptStructure(concept){
 */
 function displayCustomizeForm(){
 
-  $.getJSON('./customize/data/data.json', function(customize){
+  $.getJSON(window.customizePath, function(customize){
 
     // store ids and names of schemas
     var schemas = {};
@@ -278,9 +274,6 @@ function displayCustomizeForm(){
     // get schema from url or use default 0
     let params = new URLSearchParams(location.search);
     let schema = params.get('schema') || "0";
-
-    // TODO: read customization from settings
-    //$("#impactviz").append('<div id="impactviz-customize"></div>');
 
     // create dropdown with available schema
     $("#impactviz-customize").alpaca({
@@ -313,7 +306,7 @@ function displayCustomizeForm(){
 /*
 * write data to html
 */
-function displayIndicator(concept, label, data, overview = false){
+function writeData(concept, label, data, overview = false){
 
   // replace concept icon - to signalize that there is data available for this concept
   $('#'+concept+'-image').attr('src', './img/'+concept+'.png');

@@ -83,7 +83,13 @@
 			// display result
 			$('#result').css('display', 'block');
 
-			impact = new ImpactViz(identifier);
+			// read customize and indicators from submodules
+			var options = {
+						customize: './customize/data/data.json',
+						indicators: './indicators/data/data.json'
+			}
+
+			impact = new ImpactViz(identifier, options);
 			impact.initViz();
 
 			}else{
