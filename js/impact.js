@@ -10,26 +10,9 @@ function ImpactViz(identifier) {
 
   this.initViz = function() {
 
-    // check the type of the identifier
-    var identifierType = getIdentifierType(identifier);
+    // get and display all data for this identifier
+    displayEntityByIdentifier(identifier);
 
-    if (identifierType){
-
-      var type;
-
-      // handle entity types
-      switch (identifierType) {
-        case "doi":
-          type = "work";
-          break;
-        case "orcid":
-          type = "person";
-          break;
-      }
-
-      // get and display all data for this identifier
-      displayEntityByIdentifier(type, identifier);
-    }
   }
 }
 
@@ -63,7 +46,7 @@ function getIndicatorById(indicatorId, callback){
 * @param identifier
 * @returns indicators
 */
-function getIndicators(indicatorIds, identifier, callback){
+function getData(indicatorIds, identifier, callback){
 
   // get single indicators
   $.each(indicatorIds, function(index, indicatorId){
@@ -116,7 +99,19 @@ async function callInterface(indicator, identifier, callback){
 * @param entity
 * @param identifier
 */
-function displayEntityByIdentifier(entity, identifier){
+function displayEntityByIdentifier(identifier){
+
+  // check the type of the identifier to get the entity
+  var entity;
+  identifier = identifier.replace(/(^\w+:|^)\/\//, '');
+  const doiPattern = /10.\d{4,9}\/[-._;()\/:a-zA-Z0-9]+$/gm;
+  const orcidPattern = /^\d{4}[-]\d{4}[-]\d{4}[-]\d{4}$/gm;
+
+  if (doiPattern.exec(identifier)) {
+    entity = "work";
+  }else if (orcidPattern.exec(identifier)) {
+    entity = "person";
+  }
 
   // loading message (will be removed, once the data is there)
   $('#impactviz-overview').append('<div id="impactviz-loading">Collecting the data for the entered '+entity+'. Please be patient - this may take a while.</div>');
@@ -135,7 +130,8 @@ function displayEntityByIdentifier(entity, identifier){
       // display dropdown
       displayCustomizeForm();
 
-      $('#impactviz-overview').append('<h3><a id="title"></a></h3><p class="help-block"><i class="glyphicon glyphicon-info-sign"></i> Click on a concept to get more information.</p><br>');
+      // info block
+      $('#impactviz-overview').append('<h3><a id="title"></a></h3><p class="help-block"><i class="glyphicon glyphicon-info-sign"></i> Click on an icon to get more information.</p><br>');
 
       // handle entities differently
       switch(entity){
@@ -162,25 +158,11 @@ function displayEntityByIdentifier(entity, identifier){
           // display overview and detailed views for each concept (paperbuzz data with paperbuzzviz)
           $.each(conceptIds, function(index, conceptId){
 
-            // create a storage area for each concept in the result object
+            // create a storage area for this concept in the result object
             results[conceptId] = {};
 
-            concept = schema['concepts'][conceptId];
-
-            // create overview html structure
-            $('#impactviz-overview-row').append('<div class="col-lg-3"><a id="'+conceptId+'-link" href="#"><img width="80px" src="./img/'+conceptId+'-white.png" id="'
-            +conceptId+'-image"></img><br/><h4>'
-            +concept.title+'<i class="material-icons">arrow_drop_down</i></h4></a><div id="'
-            +conceptId+'-overview"/></div>');
-
-            $('#'+conceptId+'-link').on("click", function(e){
-              display(conceptId);
-            });
-
-            $('#impactviz-details').append('<div class="section concept" id="'+conceptId+'"><div class="alert alert-info"><i class="material-icons">'
-            +schema['concepts'][conceptId]['icon']+'</i>	<strong>'
-            +concept.title
-            +' </strong>'+concept.definition+'</div>	<div id="'+conceptId+'-results"></div></div>');
+            // create the html structure for this concept
+            displayConceptStructure(schema['concepts'][conceptId])
 
             // write data to detailed view with paperbuzzviz
             displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][conceptId]['sources'], conceptId), '#'+conceptId+'-results');
@@ -196,8 +178,8 @@ function displayEntityByIdentifier(entity, identifier){
 
       $.getJSON('./customize/data/data.json', function(customize){
 
-        // get the indicators for this entity by identifier
-        getIndicators(customize[schemaId]["indicators"], identifier, function(results){
+        // get the data for this entity by identifier
+        getData(customize[schemaId]["indicators"], identifier, function(results){
 
           // display data from result array for each concept at overview
           $.each(schema.concepts, function(concept){
@@ -219,25 +201,6 @@ function displayEntityByIdentifier(entity, identifier){
       });
     });
   });
-}
-
-
-/*
-* check identifierType with regular expressions (possible values: doi and orcid)
-*
-* @param identifier
-* @return identifierType
-*/
-function getIdentifierType(identifier){
-
-  const doiPattern = /10.\d{4,9}\/[-._;()\/:a-zA-Z0-9]+$/gm;
-  const orcidPattern = /^\d{4}[-]\d{4}[-]\d{4}[-]\d{4}$/gm;
-
-  if (doiPattern.exec(identifier)) {
-    return "doi";
-  }else if (orcidPattern.exec(identifier)) {
-    return "orcid";
-  }
 }
 
 
@@ -266,6 +229,31 @@ function displaySearchForm(identifier){
       }
     }
   });
+}
+
+/*
+* create the html structure for the concept display
+*
+* @param concept
+*/
+function displayConceptStructure(concept){
+
+  // create overview html structure
+  $('#impactviz-overview-row').append('<div class="col-sm-3"><a id="'+concept.id+'-link" href="#"><img width="80px" src="./img/'+concept.id+'-white.png" id="'
+  +concept.id+'-image"></img><br/><h4>'
+  +concept.title+'</h4></a><div id="'
+  +concept.id+'-overview"/></div>');
+
+  $('#'+concept.id+'-link').on("click", function(e){
+    display(concept.id);
+  });
+
+  // display
+  $('#impactviz-details').append('<div class="section concept" id="'+concept.id+'"><div class="alert alert-info"><i class="material-icons">'
+  +concept.icon+'</i><strong>'
+  +concept.title
+  +' </strong>'+concept.definition+'</div>	<div id="'+concept.id+'-results"></div></div>');
+
 }
 
 
