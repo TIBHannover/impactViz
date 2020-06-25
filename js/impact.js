@@ -9,12 +9,16 @@
 function ImpactViz(identifier, options = '') {
 
   // set default values for options
-  window.customizePath = './schemas/customize.json';
-  window.indicatorsPath = './schemas/indicators.json';
+  window.customizeFile = './schemas/customize.json';
+  window.indicatorsFile = './schemas/indicators.json';
+  window.entitiesPath = './entities/';
+  window.imgPath = './img/'
 
   // read options
-  if (options.customize) window.customizePath = options.customize;
-  if (options.indicators) window.indicatorsPath = options.indicators;
+  if (options.customize) window.customizeFile = options.customize;
+  if (options.indicators) window.indicatorsFile = options.indicators;
+  if (options.entities) window.entitiesPath = options.entities;
+  if (options.img) window.imgPath = options.img;
 
   // get and display all data for this identifier
   this.initViz = function() {
@@ -34,10 +38,10 @@ function ImpactViz(identifier, options = '') {
 
       // loading message (will be removed, once the data is there)
       $('#impactviz-overview').append('<div id="impactviz-loading">Collecting the data for the entered '+entity+'. Please be patient - this may take a while.</div>');
-      $('#impactviz-loading').append('<img src="./img/loading.gif"></img>');
+      $('#impactviz-loading').append('<img src="'+window.imgPath+'loading.gif"></img>');
 
       // get schema for this entity type
-      $.getJSON('./entities/'+entity+'.json', function(schema){
+      $.getJSON(window.entitiesPath+entity+'.json', function(schema){
 
         // get data from paperbuzz
         $.getJSON(schema['api'] + identifier, function(json){
@@ -95,7 +99,7 @@ function ImpactViz(identifier, options = '') {
           let params = new URLSearchParams(location.search);
           let schemaId = params.get('schema') || '0';
 
-          $.getJSON(window.customizePath, function(customize){
+          $.getJSON(window.customizeFile, function(customize){
 
             // get the data for this entity by identifier
             getData(customize[schemaId]['indicators'], identifier, function(results){
@@ -133,7 +137,7 @@ function ImpactViz(identifier, options = '') {
 function getIndicatorById(indicatorId, callback){
 
   // read metadata of this indicator from json
-  $.getJSON(window.indicatorsPath, function(indicators){
+  $.getJSON(window.indicatorsFile, function(indicators){
 
     $.each(indicators, function(index, indicator){
 
@@ -235,7 +239,7 @@ function displaySearchForm(identifier){
 function displayConceptStructure(concept){
 
   // create overview html structure
-  $('#impactviz-overview-row').append('<div class="col-sm-3"><a id="'+concept.id+'-link" href="#"><img width="80px" src="./img/'+concept.id+'-white.png" id="'
+  $('#impactviz-overview-row').append('<div class="col-sm-3"><a id="'+concept.id+'-link" href="#"><img width="80px" src="'+window.imgPath+concept.id+'-white.png" id="'
   +concept.id+'-image"></img><br/><h4>'
   +concept.title+'</h4></a><div id="'
   +concept.id+'-overview"/></div>');
@@ -259,7 +263,7 @@ function displayConceptStructure(concept){
 */
 function displayCustomizeForm(){
 
-  $.getJSON(window.customizePath, function(customize){
+  $.getJSON(window.customizeFile, function(customize){
 
     // store ids and names of schemas
     var schemas = {};
@@ -309,11 +313,11 @@ function displayCustomizeForm(){
 function writeData(concept, label, data, overview = false){
 
   // replace concept icon - to signalize that there is data available for this concept
-  $('#'+concept+'-image').attr('src', './img/'+concept+'.png');
+  $('#'+concept+'-image').attr('src', window.imgPath+concept+'.png');
 
   // display icon if the data is binary
   if(data === true || data === false || data === null){
-    data = '<img width="20px" src="./img/'+data+'.png"></img>';
+    data = '<img src="'+window.imgPath+''+data+'.png" width="20px"/>';
   }
 
   // check, if data is URL and add icon
