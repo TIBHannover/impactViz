@@ -51,12 +51,12 @@
 			 This website serves the purpose of demonstrating the functional mechanisms. It is neither a tool for research evaluation, simply because quantitative indicators cannot replace qualitative assessment, nor is it the final product. <a href="indicators">Read more</a>
 			</div>
 
-			<!-- customize -->
-			<div id="impactviz-customize"></div>
-
 			<!-- results sections -->
 			<div id="impactviz-overview"></div>
 			<div id="impactviz-details"></div>
+
+			<!-- customize -->
+			<div id="impactviz-customize"></div>
 
 		</div>
 
@@ -86,7 +86,8 @@
 			// read customize and indicators from submodules
 			var options = {
 						customize: './customize/data/data.json',
-						indicators: './indicators/data/data.json'
+						indicators: './indicators/data/data.json',
+						title: true
 			}
 
 			impact = new ImpactViz(identifier, options);

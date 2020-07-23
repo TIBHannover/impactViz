@@ -19,6 +19,7 @@ function ImpactViz(identifier, options = '') {
   if (options.indicators) window.indicatorsFile = options.indicators;
   if (options.entities) window.entitiesPath = options.entities;
   if (options.img) window.imgPath = options.img;
+  if (options.title) window.title = options.title;
 
   // get and display all data for this identifier
   this.initViz = function() {
@@ -53,10 +54,13 @@ function ImpactViz(identifier, options = '') {
           // display dropdown
           displayCustomizeForm();
 
-          // info block
-          $('#impactviz-overview').append('<h3><a id="title"></a></h3><p class="help-block"><i class="glyphicon glyphicon-info-sign"></i> Click on an icon to get more information.</p><br>');
+          // title
+          if(typeof window.title !== 'undefined'){
+            $('#impactviz-overview').append('<h3><a id="title"></a></h3>');
+          }
 
           // handle entities differently
+          // NOTE: only the entity work is properly implemented
           switch(entity){
 
             case 'person':
@@ -66,10 +70,9 @@ function ImpactViz(identifier, options = '') {
             case 'work':
 
               // display title of the work
-              $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
-
-              // add div for overview
-              $('#impactviz-overview').append('<div class="section row" id ="impactviz-overview-row">');
+              if(typeof window.title !== 'undefined'){
+                $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
+              }
 
               // get list of concepts from schema file
               var conceptIds = [];
@@ -88,9 +91,12 @@ function ImpactViz(identifier, options = '') {
                 displayConceptStructure(schema['concepts'][conceptId])
 
                 // write data to detailed view with paperbuzzviz
-                displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][conceptId]['sources'], conceptId), '#'+conceptId+'-results');
+                displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][conceptId]['sources'], conceptId), conceptId);
 
               });
+
+              // info block
+              $('#impactviz-overview').append('<p class="help-block"><i class="glyphicon glyphicon-info-sign"></i> Click on an icon to get more information.</p><br>');
 
               break;
           }
@@ -239,9 +245,8 @@ function displaySearchForm(identifier){
 function displayConceptStructure(concept){
 
   // create overview html structure
-  $('#impactviz-overview-row').append('<div class="col-sm-3"><a id="'+concept.id+'-link" href="#"><img width="80px" src="'+window.imgPath+concept.id+'-white.png" id="'
-  +concept.id+'-image"></img><br/><h4>'
-  +concept.title+'</h4></a><div id="'
+  $('#impactviz-overview').append('<div class="col-sm-3"><a id="'+concept.id+'-link" href="#'+concept.id+'" title="'+concept.title+'"><img width="80px" src="'+window.imgPath+concept.id+'-white.png" id="'
+  +concept.id+'-image"></img><br/></a><div id="'
   +concept.id+'-overview"/></div>');
 
   $('#'+concept.id+'-link').on("click", function(e){
@@ -250,9 +255,7 @@ function displayConceptStructure(concept){
 
   // display
   $('#impactviz-details').append('<div class="section concept" id="'+concept.id+'"><div class="alert alert-info"><i class="material-icons">'
-  +concept.icon+'</i><strong>'
-  +concept.title
-  +' </strong>'+concept.definition+'</div>	<div id="'+concept.id+'-results"></div></div>');
+  +concept.icon+'</i><strong>'+concept.title+' </strong>'+concept.definition+'</div>	<div id="'+concept.id+'-results"></div></div>');
 
 }
 
@@ -315,15 +318,12 @@ function writeData(concept, label, data, overview = false){
   // replace concept icon - to signalize that there is data available for this concept
   $('#'+concept+'-image').attr('src', window.imgPath+concept+'.png');
 
-  // display icon if the data is binary
-  if(data === true || data === false || data === null){
-    data = '<img src="'+window.imgPath+''+data+'.png" width="20px"/>';
-  }
-
-  // check, if data is URL and add icon
-  if(validURL(data)){
-    data = '<a href="'+data+'"><i class="material-icons">link</i></a>';
-  }
+  // check, if type of data and display matching icon
+  // NOTE: switch case is not working here
+  if(data === true) data = '<i class="material-icons">done</i>';
+  if(data === false) data = '<i class="material-icons">clear</i>';
+  if(data === null) data = '<i class="material-icons">error</i>';
+  if(validURL(data)) data = '<a href="'+data+'"><i class="material-icons">link</i></a>';
 
   // remove empty spaces and non numeric values to be able to use the label as an id
   var id = label.replace(/\s+/g, '');
@@ -380,7 +380,15 @@ function convertPaperbuzzData(json, sources, concept = ""){
 * @param vizDiv div where the visualization will be displayed
 * @param showMini display minimal or detailed view
 */
-function displayPaperbuzzviz(data, vizDiv, showMini = false){
+function displayPaperbuzzviz(data, concept, showMini = false){
+
+  var vizDiv = '#'+concept+'-results';
+
+  // replace concept icon - to signalize that there is data available for this concept
+  if(data['altmetrics_sources'][0]){
+    $('#'+concept+'-image').attr('src', window.imgPath+concept+'.png');
+  }
+
   var options = {
         minItemsToShowGraph: {
             minEventsForYearly: 1,
