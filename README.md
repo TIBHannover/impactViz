@@ -1,8 +1,8 @@
-# ImpactViz 
+# ImpactViz - Open Impact Visualiser
 
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 
-ImpactViz - Open Impact Vizualiser enables the display of open metrics on article pages
+ImpactViz - Open Impact Visualiser enables the display of open metrics on article pages
 
 Open scientometric indicators enable a comprehensible evaluation of science. The tool "ImpactViz - Open Impact Vizualizer" ([Github](https://github.com/tibhannover/rosi-prototype)), developed in the project [ROSI (Reference Implementation for Open Scientometric Indicators)](https://tib.eu/rosi-project), enables the adaptable presentation of open scientometric information from scientific publications.
 
@@ -16,7 +16,7 @@ ImpactViz aims to visualize the impact of publications. Users can retrieve infor
   
 ### Visualization
 * recognition of articles with persisten identifier (doi)
-* display overview of the impact in the four areas (concepts): scientific impact, societal impact, community, openness
+* display overview of the impact in the four concepts: scientific impact, societal impact, community impact, openness
 * display all indicators in detailed view at single tabs (for each concept) 
 * display timelines based on data from PaperBuzz (using [paperbuzzviz](https://github.com/jalperin/paperbuzzviz))
 * display list of available indicators
@@ -66,15 +66,35 @@ This project is licensed under the [MIT License](https://opensource.org/licenses
 ## Include ImpactViz in your own tool
 
 You can easily include ImpactViz in your own tool. You need to 
-* add the needed libraries to your header
-* add a div the the html structure of your page 
+* add the needed libraries to your header. (You can use the included libraries or you can get the code via CDN. See the [example.html](https://github.com/TIBHannover/impactViz/blob/master/example.html) for the second approach.)
+```
+	<!-- dependencies (jquery, handlebars and bootstrap) -->
+  <script type="text/javascript" src="lib/jquery-3.5.1.min.js"></script>
+  <script type="text/javascript" src="lib/handlebars.min.js"></script>
+  <link type="text/css" href="lib/bootstrap.min.css" rel="stylesheet"/>
+  <script type="text/javascript" src="lib/bootstrap.min.js"></script>
+
+  <!-- alpaca -->
+  <link type="text/css" href="lib/alpaca.min.css" rel="stylesheet"/>
+  <script type="text/javascript" src="lib/alpaca.min.js"></script>
+
+  <!-- google icons -->
+  <link href="lib/googleIcons.css" rel="stylesheet">
+
+  <!-- paperbuzzviz and d3js-->
+  <script type="text/javascript" src="lib/d3.v4.min.js"></script> <!-- TODO get via npm or git submodule -->
+  <script type="text/javascript" src="lib/paperbuzzviz/example/d3-tip.js"></script>
+  <script type="text/javascript" src="lib/paperbuzzviz/paperbuzzviz.js"></script>
+  <link rel="stylesheet" type="text/css" href="lib/paperbuzzviz/assets/css/paperbuzzviz.css" />
+```
+* add a div the the html structure of your page:
 ```
   <!-- overview -->
   <div id="impactviz-overview"></div>
   <!-- details -->
   <div id="impactviz-details"></div>
  ```
-* activate the script in JavaScript:
+* and activate the script in JavaScript:
 ```
     <script type="text/javascript">
       var identifier = "10.1038/520429a"; // get the identifier somewhere
@@ -86,5 +106,5 @@ See also [example.html](https://github.com/TIBHannover/impactViz/blob/master/exa
 
 ## Available Plugins
 
-* OJS (work in progress)
+* OJS (work in progress) https://github.com/lilients/openImpact/
 * VIVO (work in progress)
