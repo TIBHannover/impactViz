@@ -11,8 +11,6 @@
         "f1000"
       ],
       "overview": [
-        "Citations (COCI)",
-        "Citations (Paperbuzz)"
       ]
       },
     "societal-impact": {
@@ -30,13 +28,12 @@
         "reddit"
       ],
       "overview": [
-        "twitter",
-        "wikipedia"
+
       ]
     },
     "community": {
       "id": "community",
-      "title": "Community",
+      "title": "Community Impact",
       "definition": "Involvement in the scientific community (e.g. participation in conferences, peer review and editorial activities, and learned societies).",
       "icon": "people",
       "sources": [
@@ -44,7 +41,7 @@
         "stackexchange"
       ],
       "overview": [
-        "stackexchange"
+
       ]
       },
     "openness": {
@@ -56,7 +53,7 @@
         "unpaywall"
       ],
       "overview": [
-        "Open Access"
+
       ]
       }
   }
