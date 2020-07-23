@@ -12,14 +12,14 @@ ImpactViz aims to visualize the impact of publications. Users can retrieve infor
 
 ## Features
 
+<a href="impactViz"><img src="https://raw.githubusercontent.com/lilients/img/master/impactViz_expanded.png" align="right" width="225"></a>
+  
 ### Visualization
 * recognition of articles with persisten identifier (doi)
 * display overview of the impact in the four areas (concepts): scientific impact, societal impact, community, openness
 * display all indicators in detailed view at single tabs (for each concept) 
 * display timelines based on data from PaperBuzz (using [paperbuzzviz](https://github.com/jalperin/paperbuzzviz))
 * display list of available indicators
-
-  <a href="impactViz"><img src="https://raw.githubusercontent.com/lilients/img/master/impactViz_expanded.png" align="right" width="225"></a>
 
 ### Configuration: Adding new indicators
 * addition of new indicators (password protected)
