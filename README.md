@@ -4,7 +4,7 @@
 
 ImpactViz - Open Impact Visualiser enables the display of open metrics on article pages
 
-Open scientometric indicators enable a comprehensible evaluation of science. The tool "ImpactViz - Open Impact Vizualizer" ([Github](https://github.com/tibhannover/rosi-prototype)), developed in the project [ROSI (Reference Implementation for Open Scientometric Indicators)](https://tib.eu/rosi-project), enables the adaptable presentation of open scientometric information from scientific publications.
+Open scientometric indicators enable a comprehensible evaluation of science. The tool "ImpactViz - Open Impact Vizualizer" ([Github](https://github.com/tibhannover/impactViz)), developed in the project [ROSI (Reference Implementation for Open Scientometric Indicators)](https://tib.eu/rosi-project), enables the adaptable presentation of open scientometric information from scientific publications.
 
 ImpactViz aims to visualize the impact of publications. Users can retrieve information by entering the persistent identifier of a publication (doi). Data is only retrieved from open data sources, that supply an open interface.
 
