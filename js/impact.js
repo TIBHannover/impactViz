@@ -9,14 +9,15 @@
 function ImpactViz(identifier, options = '') {
 
   // set default values for options
-  window.customizeFile = './schemas/customize.json';
   window.indicatorsFile = './schemas/indicators.json';
+  window.customizeFile = './schemas/customize.json';
   window.entitiesPath = './entities/';
   window.imgPath = './img/'
 
   // read options
   if (options.customize) window.customizeFile = options.customize;
   if (options.indicators) window.indicatorsFile = options.indicators;
+  if (options.selectedIndicators) window.selectedIndicators = options.selectedIndicators;
   if (options.entities) window.entitiesPath = options.entities;
   if (options.img) window.imgPath = options.img;
   if (options.title) window.title = options.title;
@@ -54,13 +55,12 @@ function ImpactViz(identifier, options = '') {
           // display dropdown
           displayCustomizeForm();
 
-          // title
-          if(typeof window.title !== 'undefined'){
+          if(typeof title !== 'undefined'){
+            // title
             $('#impactviz-overview').append('<h3><a id="title"></a></h3>');
           }
 
           // handle entities differently
-          // NOTE: only the entity work is properly implemented
           switch(entity){
 
             case 'person':
@@ -70,7 +70,7 @@ function ImpactViz(identifier, options = '') {
             case 'work':
 
               // display title of the work
-              if(typeof window.title !== 'undefined'){
+              if(typeof title !== 'undefined'){
                 $('#title').attr('href', json.metadata.URL).text(json.metadata.title);
               }
 
@@ -91,7 +91,7 @@ function ImpactViz(identifier, options = '') {
                 displayConceptStructure(schema['concepts'][conceptId])
 
                 // write data to detailed view with paperbuzzviz
-                displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][conceptId]['sources'], conceptId), conceptId);
+                displayPaperbuzzviz(convertPaperbuzzData(json, schema['concepts'][conceptId]['sources'], conceptId), conceptId, true);
 
               });
 
@@ -105,33 +105,59 @@ function ImpactViz(identifier, options = '') {
           let params = new URLSearchParams(location.search);
           let schemaId = params.get('schema') || '0';
 
-          $.getJSON(window.customizeFile, function(customize){
+          // handle list of selected indicators - otherwise read customization from file
+          if(window.selectedIndicators){
 
-            // get the data for this entity by identifier
-            getData(customize[schemaId]['indicators'], identifier, function(results){
+            // convert string back into array
+            var array = window.selectedIndicators.split(",");
 
-              // display data from result array for each concept at overview
-              $.each(schema.concepts, function(concept){
+            // get the data for this entity by identifier and write to html
+            getData(array, identifier, function(results){
+              // display the defined indicators as an preview
+              displayOverviewIndicators(schema, results);
+            });
+          }else if (window.customizeFile) {
 
-                $.each(results[concept], function(indicatorName, value){
+            // get list of selected indicators from customization file
+            $.getJSON(window.customizeFile, function(customize){
 
-                  $.each(schema['concepts'][concept]['overview'], function(key, overview){
-
-                    if(indicatorName == overview){
-
-                      // write to overview
-                      writeData(concept, indicatorName, value, true);
-
-                    }
-                  });
-                });
+              // get the data for this entity by identifier and write to html
+              getData(customize[schemaId]['indicators'], identifier, function(results){
+                // display the defined indicators as an preview
+                displayOverviewIndicators(schema, results);
               });
             });
-          });
+          }
         });
       });
-
   }
+}
+
+
+/*
+* display in the schema of this entity defined indicators directly below the icons as an overview
+*
+* @param schema the schema of this entity
+* @param results the list of retrieved indicators
+*/
+function displayOverviewIndicators(schema, results){
+
+  // for each concept ..
+  $.each(schema.concepts, function(concept){
+
+    // ... get data from result array ...
+    $.each(results[concept], function(indicatorName, value){
+
+      // ... and get the indicators that should be displayed ...
+      $.each(schema['concepts'][concept]['overview'], function(key, overview){
+
+        if(indicatorName == overview){
+          // ... and display them
+          writeData(concept, indicatorName, value, true);
+        }
+      });
+    });
+  });
 }
 
 
