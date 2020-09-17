@@ -12,7 +12,9 @@ ImpactViz aims to visualize the impact of publications. Users can retrieve infor
 
 ## Features
 
-<a href="impactViz"><img src="https://raw.githubusercontent.com/lilients/img/master/impactViz_expanded.png" align="right" width="225"></a>
+<a href="https://labs.tib.eu/rosi/prototype/"><img src="https://raw.githubusercontent.com/lilients/img/master/impactViz_expanded.png" align="right" width="350"></a>
+
+<img src="https://raw.githubusercontent.com/lilients/img/master/concepts.png" align="right" width="100">
   
 ### Visualization
 * recognition of articles with persisten identifier (doi)
@@ -37,6 +39,8 @@ ImpactViz has the follwing settings that can be passed via JavaScript (see examp
 * title - boolean
 
 ## Technical implementation
+
+<img src="https://raw.githubusercontent.com/lilients/img/master/flowchart.png" align="right" width="500">
 
 The tool bases on existing JavaScript libraries for some of the core functionalities:
 
