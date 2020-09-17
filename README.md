@@ -2,7 +2,7 @@
 
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 
-ImpactViz - Open Impact Visualiser enables the display of open metrics on article pages
+ImpactViz - Open Impact Visualizer enables the display of open metrics on article pages
 
 Open scientometric indicators enable a comprehensible evaluation of science. The tool "ImpactViz - Open Impact Visualizer" ([Github](https://github.com/tibhannover/impactViz)), developed in the project [ROSI (Reference Implementation for Open Scientometric Indicators)](https://tib.eu/rosi-project), enables the adaptable presentation of open scientometric information from scientific publications.
 
