@@ -8,11 +8,11 @@ Open scientometric indicators enable a comprehensible evaluation of science. The
 
 ImpactViz aims to visualize the impact of publications. Users can retrieve information by entering the persistent identifier of a publication (doi). Data is only retrieved from open data sources, that supply an open interface.
 
-[Demo](labs.tib.eu/rosi/prototype/)
+[Demo](https://osl.tib.eu/impactviz/)
 
 ## Features
 
-<a href="https://labs.tib.eu/rosi/prototype/"><img src="https://raw.githubusercontent.com/lilients/img/master/impactViz_expanded.png" align="right" width="350"></a>
+<a href="https://osl.tib.eu/impactviz/"><img src="https://raw.githubusercontent.com/lilients/img/master/impactViz_expanded.png" align="right" width="350"></a>
 
 <img src="https://raw.githubusercontent.com/lilients/img/master/concepts.png" align="right" width="100">
   
@@ -50,7 +50,7 @@ The tool bases on existing JavaScript libraries for some of the core functionali
 * [chartjs](https://www.chartjs.org/) - js library to vizualize charts
 
 Data sources are accessed via APIs and data is retrieved in json format. All internal data is also stored in json format.
-The [lists of all available indicators](https://labs.tib.eu/rosi/prototype/indicators/) and [all customizations](https://labs.tib.eu/rosi/prototype/customize/) are being managed reusing a previously implemented [registry application](github.com/lilients/registry).
+The [lists of all available indicators](https://osl.tib.eu/impactviz/indicators/) and [all customizations](https://osl.tib.eu/impactviz/customize/) are being managed reusing a previously implemented [registry application](https://github.com/lilients/registry).
 
 Current and future developments can be traced in the [ROSI prototype project](https://github.com/TIBHannover/rosi-prototype/projects/1)
 
